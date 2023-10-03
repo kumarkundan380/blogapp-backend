@@ -74,7 +74,6 @@ public class User extends BaseEntity {
 	private Boolean isActive = Boolean.TRUE;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	@ToString.Exclude
 	private Set<Post> posts;
 	
 	@OneToMany(mappedBy = "user")

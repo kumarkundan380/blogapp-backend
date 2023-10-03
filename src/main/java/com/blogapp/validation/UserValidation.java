@@ -9,17 +9,14 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class UserValidation {
 
-    public static UserDTO validateUser(UserDTO user){
+    public static void validateUser(UserDTO user){
         log.info("validateUser method invoking");
         if(!StringUtils.hasText(user.getFirstName())){
             log.error("First Name is empty");
-            throw new BlogAppException("Name cannot be empty");
+            throw new BlogAppException("First Name cannot be empty");
         } else if (!StringUtils.hasText(user.getUserName())) {
             log.error("Username is empty");
             throw new BlogAppException("Username cannot be empty");
-        } else if (!StringUtils.hasText(user.getUserName())) {
-            log.error("UserName is empty");
-            throw new BlogAppException("UserName cannot be empty");
         } else if(ObjectUtils.isEmpty(user.getGender())){
             log.error("Gender is empty");
             throw new BlogAppException("Gender cannot be empty");
@@ -28,14 +25,7 @@ public class UserValidation {
         user.setUserName(user.getUserName().trim().toLowerCase());
         user.setFirstName(user.getFirstName().trim());
         log.info("validateUser method called");
-        return user;
     }
 
-    public static Boolean matchPhoneNumberField(String oldPhoneNumber, String newPhoneNumber){
-        if(oldPhoneNumber.equals(newPhoneNumber)){
-            return true;
-        }
-        return false;
-    }
 
 }

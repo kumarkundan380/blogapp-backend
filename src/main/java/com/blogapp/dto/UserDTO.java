@@ -2,6 +2,10 @@ package com.blogapp.dto;
 
 import com.blogapp.enums.Gender;
 import com.blogapp.enums.UserStatus;
+import com.blogapp.serializer.UserDTOSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,6 +24,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties( value = {"password"}, allowSetters =  true )
+@JsonSerialize(using = UserDTOSerializer.class)
 public class UserDTO implements Serializable {
 
     @Serial

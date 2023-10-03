@@ -2,6 +2,7 @@ package com.blogapp.service.impl;
 
 import com.blogapp.dto.UserDTO;
 import com.blogapp.dto.RoleDTO;
+import com.blogapp.enums.UserStatus;
 import com.blogapp.exception.BlogAppException;
 import com.blogapp.exception.ResourceNotFoundException;
 import com.blogapp.model.Address;
@@ -21,11 +22,17 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static com.blogapp.constant.BlogAppConstant.EXCEPTION_FIELD;
 import static com.blogapp.constant.BlogAppConstant.USER_EXCEPTION;
+import static com.blogapp.constant.BlogAppConstant.USER_SORT_FIELD;
 
 @Service
 @Slf4j
@@ -41,11 +49,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
     private final ModelMapper modelMapper;
-
     private final PasswordEncoder passwordEncoder;
-
     private final EmailUtil emailUtil;
 
     @Autowired
@@ -67,8 +72,7 @@ public class UserServiceImpl implements UserService {
             throw new BlogAppException("Password cannot be empty");
         }
         userDTO.setPassword(userDTO.getPassword().trim());
-        Optional<User> optionalUser = userRepository.findByUserName(userDTO.getUserName());
-        if(optionalUser.isPresent()){
+        if(userRepository.isUserExist(userDTO.getUserName())){
             log.error("Username already exist");
             throw new BlogAppException("Username already exist. Please try other Username");
         }
@@ -92,6 +96,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public UserDTO updateUser(UserDTO userDTO, Integer userId) {
         log.info("updateUser method invoking");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
@@ -116,16 +121,63 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserById(Integer userId) {
-        return null;
+        log.info("getUserById method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        return convertUserToUserDTO(user);
     }
 
     @Override
     public BlogAppPageableResponse<?> getAllUser(Integer pageNumber, Integer pageSize) {
-        return null;
+        log.info("getAllUsers method invoking");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, USER_SORT_FIELD));
+        Page<User> pageUsers;
+        if(AuthorityUtil.isAdminRole()){
+            pageUsers = userRepository.findAll(pageable);
+        } else {
+            pageUsers = userRepository.findAllUser(UserStatus.ACTIVE.getValue(),Boolean.TRUE, pageable);
+        }
+        List<UserDTO> userDTOS = new ArrayList<>();
+        List<User> users = null;
+        if(pageUsers != null){
+            users = pageUsers.getContent();
+        }
+        if(!CollectionUtils.isEmpty(users)){
+            for(User user : users){
+                UserDTO userDTO = convertUserToUserDTO(user);
+                userDTOS.add(userDTO);
+            }
+        }
+        log.info("getAllUsers method called");
+        return BlogAppPageableResponse.builder()
+                .content(userDTOS)
+                .pageNumber(pageUsers.getNumber())
+                .pageSize(pageUsers.getSize())
+                .totalElement(pageUsers.getTotalElements())
+                .totalPages(pageUsers.getTotalPages())
+                .isLast(pageUsers.isLast())
+                .isFirst(pageUsers.isFirst())
+                .build();
+
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void deleteUser(Integer userId) {
+        log.info("deleteUser method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        if(AuthorityUtil.isAdminRole() || AuthorityUtil.isSameUser(user.getUserName())) {
+            if(!user.getStatus().equals(UserStatus.DELETED)){
+                userRepository.deleteUser(userId);
+            } else {
+                log.error("User already deleted");
+                throw new BlogAppException("User already deleted");
+            }
+
+        } else {
+            log.error("You cannot delete other user");
+            throw new BlogAppException("You cannot delete other user");
+        }
+        log.info("deleteUser method called");
 
     }
 
@@ -211,27 +263,22 @@ public class UserServiceImpl implements UserService {
 
     private UserDTO getUpdatedUser(User user, UserDTO userDTO){
         log.info("getUpdatedUser method invoking");
-        //user.setName(userDTO.getName());
-        Optional<User> optionalUser;
-        if(!user.getPhoneNumber().equals(userDTO.getPhoneNumber())){
-         //   optionalUser = userRepository.findByPhoneNumber(userDTO.getPhoneNumber());
-//            if(optionalUser.isPresent()){
-//                log.error("Phone Number already exist");
-//                throw new BlogAppException("Phone Number exist. Please try other Username");
-//            }
-        }
+        user.setFirstName(userDTO.getFirstName());
+        user.setMiddleName(userDTO.getMiddleName());
+        user.setLastName(userDTO.getLastName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
-//        if(!user.getEmail().trim().equalsIgnoreCase(userDTO.getEmail().trim())){
-//            optionalUser = userRepository.findByEmail(userDTO.getEmail());
-//            if(optionalUser.isPresent()) {
-//                log.error("Email already exist");
-//                throw new ExamPortalException("Email already exist. Please try other Email");
-//            }
-//            if(!AuthorityUtil.isAdminRole()){
-//                log.info("Setting isVerified field false for new email");
-//                user.setIsVerified(Boolean.FALSE);
-//            }
-//        }
+        Optional<User> optionalUser;
+        if(!user.getUserName().trim().equalsIgnoreCase(userDTO.getUserName().trim())){
+            optionalUser = userRepository.findByUserName(userDTO.getUserName());
+            if(optionalUser.isPresent()) {
+                log.error("Email already exist");
+                throw new BlogAppException("Username already exist. Please try other Username");
+            }
+            if(!AuthorityUtil.isAdminRole()){
+                log.info("Setting isVerified field false for new Username");
+                user.setIsUserVerified(Boolean.FALSE);
+            }
+        }
         user.setGender(userDTO.getGender());
         log.info("Saving user information into data base");
         user = userRepository.save(user);

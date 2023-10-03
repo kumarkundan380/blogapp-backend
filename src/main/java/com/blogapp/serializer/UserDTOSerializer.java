@@ -26,7 +26,9 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
         gen.writeStartObject();
         gen.writeNumberField("userId", user.getUserId());
         gen.writeStringField("userName", user.getUserName());
-        gen.writeStringField("name", user.getFirstName());
+        gen.writeStringField("firstName", user.getFirstName());
+        gen.writeStringField("middleName", user.getMiddleName());
+        gen.writeStringField("lastName", user.getLastName());
         gen.writeStringField("gender", user.getGender().getValue());
         gen.writeStringField("phoneNumber", user.getPhoneNumber());
         gen.writeStringField("userImage", user.getUserImage());
@@ -34,7 +36,7 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
         gen.writeStartArray();
         for(RoleDTO roleDTO: user.getRoles()){
             gen.writeStartObject();
-            gen.writeNumberField("roleId", roleDTO.getId());
+            gen.writeNumberField("roleId", roleDTO.getRoleId());
             gen.writeStringField("roleName",roleDTO.getRoleName().getValue());
             gen.writeStringField("description", roleDTO.getDescription());
             gen.writeEndObject();
