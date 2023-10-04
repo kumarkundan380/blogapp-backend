@@ -61,7 +61,7 @@ public class User extends BaseEntity {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private Set<Address> addresses;
+	private Set<Address> addresses = new HashSet<>();
 
 	@Column(name = "gender", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -74,10 +74,10 @@ public class User extends BaseEntity {
 	private Boolean isActive = Boolean.TRUE;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<Post> posts;
+	private Set<Post> posts = new HashSet<>();
 	
 	@OneToMany(mappedBy = "user")
-	private Set<Comment> comments;
+	private Set<Comment> comments = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "user_role",

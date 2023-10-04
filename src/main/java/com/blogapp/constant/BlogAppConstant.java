@@ -41,7 +41,6 @@ public class BlogAppConstant {
     public static final String USER_PARAMETER = "userId";
     public static final String ADDRESS_PARAMETER = "addressId";
     public static final String TOKEN_PARAMETER = "token";
-
     public static final String BASE_PATH_POST = COMMON_PATH + "/post";
     public static final String SEARCH_POST = "/search";
     public static final String UPLOAD_IMAGE = "/image/upload";

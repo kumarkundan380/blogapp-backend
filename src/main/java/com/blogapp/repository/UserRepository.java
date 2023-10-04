@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.userName = ?1 ")
 	Boolean isUserExist(String userName);
 
+	User getUserByUsername(String userName);
+
 }

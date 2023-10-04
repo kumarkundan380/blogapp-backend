@@ -12,11 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordChangeRequest implements Serializable {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	
+public class PasswordChangeRequest {
+
 	@NotBlank(message = "Old Password must not be null or empty")
 	private String oldPassword;
 	

@@ -1,5 +1,6 @@
 package com.blogapp.service.impl;
 
+import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.UserDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.enums.UserStatus;
@@ -9,13 +10,19 @@ import com.blogapp.model.Address;
 import com.blogapp.model.Role;
 import com.blogapp.model.User;
 import com.blogapp.enums.UserRole;
+import com.blogapp.model.VerificationToken;
+import com.blogapp.repository.AddressRepository;
 import com.blogapp.repository.RoleRepository;
 import com.blogapp.repository.UserRepository;
+import com.blogapp.repository.VerificationTokenRepository;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppPageableResponse;
+import com.blogapp.service.CommonService;
 import com.blogapp.service.UserService;
 import com.blogapp.util.AuthorityUtil;
 import com.blogapp.util.EmailUtil;
+import com.blogapp.validation.AddressValidation;
+import com.blogapp.validation.PasswordChangedRequestValidation;
 import com.blogapp.validation.UserValidation;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -32,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +47,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.blogapp.constant.BlogAppConstant.ADDRESS_EXCEPTION;
 import static com.blogapp.constant.BlogAppConstant.EXCEPTION_FIELD;
 import static com.blogapp.constant.BlogAppConstant.USER_EXCEPTION;
 import static com.blogapp.constant.BlogAppConstant.USER_SORT_FIELD;
@@ -48,18 +57,24 @@ import static com.blogapp.constant.BlogAppConstant.USER_SORT_FIELD;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailUtil emailUtil;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final CommonService commonService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository, EmailUtil emailUtil) {
+    public UserServiceImpl(UserRepository userRepository, AddressRepository addressRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository, EmailUtil emailUtil, VerificationTokenRepository verificationTokenRepository,CommonService commonService) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.emailUtil = emailUtil;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.commonService = commonService;
     }
 
     @Override
@@ -83,7 +98,7 @@ public class UserServiceImpl implements UserService {
             user.getRoles().add(role.get());
             log.info("Saving user information into data base");
             user = userRepository.save(user);
-            userDTO = convertUserToUserDTO(user);
+            userDTO = commonService.convertUserToUserDTO(user);
             User finalUser = user;
             log.info("Sending verification email");
             CompletableFuture.runAsync(() -> sendVerificationEmail(finalUser));
@@ -123,7 +138,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserById(Integer userId) {
         log.info("getUserById method invoking");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
-        return convertUserToUserDTO(user);
+        return commonService.convertUserToUserDTO(user);
     }
 
     @Override
@@ -143,7 +158,7 @@ public class UserServiceImpl implements UserService {
         }
         if(!CollectionUtils.isEmpty(users)){
             for(User user : users){
-                UserDTO userDTO = convertUserToUserDTO(user);
+                UserDTO userDTO = commonService.convertUserToUserDTO(user);
                 userDTOS.add(userDTO);
             }
         }
@@ -182,73 +197,138 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateRole(Set<String> roles, Integer userId) {
-        return null;
-    }
-
-    @Override
-    public List<Role> geAllRoles() {
-        return null;
-    }
-
-    @Override
-    public UserDTO deleteRole(Set<String> roles, Integer userId) {
-        return null;
-    }
-
-    @Override
-    public UserDTO addAddress(Address addresses, Integer userId) {
-        return null;
-    }
-
-    @Override
-    public Set<Address> findAddress(Integer userId) {
-        return null;
-    }
-
-    @Override
-    public UserDTO updateAddress(Address addresses, Integer userId, Integer addressId) {
-        return null;
-    }
-
-    @Override
-    public Address updateAddressByAdmin(Integer userId, Address address, Integer addressId) {
-        return null;
-    }
-
-    @Override
-    public User deleteAddress(Integer userId, Integer addressId) {
-        return null;
-    }
-
-    @Override
-    public String verifyUser(String token) {
-        return null;
-    }
-
-    @Override
-    public User getUserByUsername(String userName) {
-        return null;
-    }
-
-    @Override
-    public String changePassword(PasswordChangeRequest passwordChangeRequest, Integer userId) {
-        return null;
-    }
-
-    private UserDTO convertUserToUserDTO(User user) {
-        log.info("convertUserToUserDTO method invoking");
-        UserDTO userDTO = modelMapper.map(user,UserDTO.class);
-        if(AuthorityUtil.isAdminRole()){
-            userDTO.setUserStatus(user.getStatus());
-            userDTO.setIsUserVerified(user.getIsUserVerified());
+    @Transactional(rollbackOn = Exception.class)
+    public UserDTO updateRole(Set<UserRole> userRoles, Integer userId) {
+        log.info("updateUserRole method invoking");
+        if(AuthorityUtil.isAdminRole()) {
+            User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles);
+            user.getRoles().addAll(roles);
+            log.info("Saving user information into data base");
+            user = userRepository.save(user);
+            return commonService.convertUserToUserDTO(user);
+        } else {
+            log.error("You do not have permission to add role");
+            throw new BlogAppException("You do not have permission to add role");
         }
-        Set<RoleDTO> roleDTOS = user.getRoles().stream().map(r -> modelMapper.map(r, RoleDTO.class)).collect(Collectors.toSet());
-        userDTO.setRoles(roleDTOS);
-        log.info("convertUserToUserDTO method called");
-        return userDTO;
     }
 
+    @Override
+    public Set<RoleDTO> geAllRoles() {
+        log.info("geAllRoles method invoking");
+        if(AuthorityUtil.isAdminRole()) {
+            List<Role> roles = roleRepository.findAll();
+            return roles.stream().map(r -> modelMapper.map(r, RoleDTO.class)).collect(Collectors.toSet());
+        } else {
+            log.error("You do not have permission to add role");
+            throw new BlogAppException("You do not have permission to add role");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public UserDTO deleteRole(Set<UserRole> userRoles, Integer userId) {
+        log.info("deleteRole method invoking");
+        if(AuthorityUtil.isAdminRole()) {
+            User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles);
+            user.getRoles().removeAll(roles);
+            log.info("Saving user information into data base");
+            user = userRepository.save(user);
+            return commonService.convertUserToUserDTO(user);
+        } else {
+            log.error("You do not have permission to add role");
+            throw new BlogAppException("You do not have permission to add role");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public UserDTO addAddress(AddressDTO addressDTO, Integer userId) {
+        log.info("addAddress method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        AddressValidation.validateAddress(addressDTO);
+        Address address = modelMapper.map(addressDTO, Address.class);
+        address.setUser(user);
+        address = addressRepository.save(address);
+        user.getAddresses().add(address);
+        return commonService.convertUserToUserDTO(user);
+    }
+
+    @Override
+    public Set<AddressDTO> findAddress(Integer userId) {
+        log.info("findAddress method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        Set<Address> addresses = addressRepository.findByUser(user);
+        return addresses.stream().map(address -> modelMapper.map(addresses, AddressDTO.class)).collect(Collectors.toSet());
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public UserDTO updateAddress(AddressDTO addressDTO, Integer userId, Integer addressId) {
+        log.info("addAddress method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        Address address = addressRepository.findById(addressId).orElseThrow(() -> new ResourceNotFoundException(ADDRESS_EXCEPTION, EXCEPTION_FIELD, addressId));
+        AddressValidation.validateAddress(addressDTO);
+        getUpdatedAddress(address,addressDTO);
+        address.setUser(user);
+        address = addressRepository.save(address);
+        user.getAddresses().add(address);
+        return commonService.convertUserToUserDTO(user);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public UserDTO deleteAddress(Integer userId, Integer addressId) {
+        log.info("deleteAddress method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        Address address = addressRepository.findById(addressId).orElseThrow(() -> new ResourceNotFoundException(ADDRESS_EXCEPTION, EXCEPTION_FIELD, addressId));
+        addressRepository.delete(address);
+        user.getAddresses().remove(address);
+        return commonService.convertUserToUserDTO(user);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public String verifyUser(String token) {
+        log.info("verifyUser method invoking");
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElseThrow(()-> new BlogAppException("Token is either expired or invalid"));
+        User user = verificationToken.getUser();
+        if(verificationToken.getCreatedAt().plusMinutes(15).isAfter(LocalDateTime.now())) {
+            user.setIsUserVerified(Boolean.TRUE);
+            log.info("Saving user information into data bases");
+            userRepository.save(user);
+            log.info("verifyUser method called");
+            return "Congratulations! Your account has been activated and email is verified!";
+        } else {
+            verificationTokenRepository.delete(verificationToken);
+            sendVerificationEmail(user);
+            log.info("verifyUser method called");
+            return "This Link is expired. New Verification Link send to your E-Mail Please Verify it Within 15 min.";
+        }
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public String changePassword(PasswordChangeRequest passwordChangeRequest, Integer userId) {
+        log.info("changePassword method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        PasswordChangedRequestValidation.validatePasswordChangedRequest(passwordChangeRequest);
+        if (passwordEncoder.matches(passwordChangeRequest.getOldPassword(), user.getPassword())) {
+            if (passwordChangeRequest.getOldPassword().equals(passwordChangeRequest.getNewPassword().trim())) {
+                log.error("New Password matched with Existing Password");
+                throw new BlogAppException("New Password matched with Existing Password. Please enter different Password");
+            }
+            user.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
+            log.info("Saving user information into data base");
+            userRepository.save(user);
+            log.info("changePassword method called");
+            return "Password Changed";
+        } else {
+            log.error("Password Not matched with Existing Password");
+            throw new BlogAppException("Password Not matched with Existing Password");
+        }
+    }
     private void sendVerificationEmail(User user){
         log.info("sendVerificationEmail method invoking");
         try {
@@ -282,7 +362,7 @@ public class UserServiceImpl implements UserService {
         user.setGender(userDTO.getGender());
         log.info("Saving user information into data base");
         user = userRepository.save(user);
-        userDTO = convertUserToUserDTO(user);
+        userDTO = commonService.convertUserToUserDTO(user);
         if(!user.getIsUserVerified()){
             User finalUser = user;
             log.info("Sending verification mail for verifying email");
@@ -292,5 +372,15 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
+    private void getUpdatedAddress(Address address, AddressDTO addressDTO){
+        log.info("getUpdatedAddress method invoking");
+        address.setAddressLine1(addressDTO.getAddressLine1());
+        address.setAddressLine2(addressDTO.getAddressLine2());
+        address.setCity(addressDTO.getCity());
+        address.setState(addressDTO.getState());
+        address.setCountry(addressDTO.getCountry());
+        address.setPostalCode(addressDTO.getPostalCode());
+        log.info("getUpdatedAddress method called");
+    }
 
 }
