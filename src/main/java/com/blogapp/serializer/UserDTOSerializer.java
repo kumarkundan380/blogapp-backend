@@ -1,11 +1,13 @@
 package com.blogapp.serializer;
 
+import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
 import com.blogapp.util.AuthorityUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -40,6 +42,18 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
             gen.writeStringField("roleName",roleDTO.getRoleName().getValue());
             gen.writeStringField("description", roleDTO.getDescription());
             gen.writeEndObject();
+        }
+        gen.writeEndArray();
+        gen.writeStartArray();
+        for(AddressDTO addressDTO: user.getAddresses()){
+            gen.writeStartObject();
+            gen.writeNumberField("addressId", addressDTO.getAddressId());
+            gen.writeStringField("addressLine1",addressDTO.getAddressLine1());
+            gen.writeStringField("addressLine2",addressDTO.getAddressLine2());
+            gen.writeStringField("city",addressDTO.getCity());
+            gen.writeStringField("state",addressDTO.getState());
+            gen.writeStringField("country",addressDTO.getCountry());
+            gen.writeStringField("postalCode",addressDTO.getPostalCode());
         }
         gen.writeEndArray();
         if(AuthorityUtil.isAdminRole()) {

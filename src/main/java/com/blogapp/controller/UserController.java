@@ -1,8 +1,9 @@
 package com.blogapp.controller;
 
+import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.UserDTO;
 import com.blogapp.enums.ResponseStatus;
-import com.blogapp.model.Address;
+import com.blogapp.enums.UserRole;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.UserService;
@@ -19,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Set;
-
 import static com.blogapp.constant.BlogAppConstant.ADDRESS_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.ADDRESS_PATH;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
@@ -100,34 +99,34 @@ public class UserController {
 	
 
 	@PutMapping("/{" + USER_PARAMETER + "}/" + ROLES_PATH)
-	public ResponseEntity<BlogAppResponse<?>> updateRole(@RequestBody Set<String> roles,
+	public ResponseEntity<BlogAppResponse<?>> updateRole(@RequestBody Set<UserRole> userRoles,
 													 @PathVariable Integer userId){
 		return new ResponseEntity<>(BlogAppResponse.builder()
 			.status(ResponseStatus.SUCCESS)
 			.message("User Role added successfully")
-			.body(userService.updateRole(roles,userId))
+			.body(userService.updateRole(userRoles,userId))
 			.build(),
 			HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{" + USER_PARAMETER + "}" + ROLES_PATH)
-	public ResponseEntity<BlogAppResponse<?>> deleteRole(@RequestBody Set<String> roles,
+	public ResponseEntity<BlogAppResponse<?>> deleteRole(@RequestBody Set<UserRole> userRoles,
 														 @PathVariable Integer userId){
 		return new ResponseEntity<>(BlogAppResponse.builder()
 				.status(ResponseStatus.SUCCESS)
 				.message("Role deleted successfully")
-				.body(userService.deleteRole(roles,userId))
+				.body(userService.deleteRole(userRoles,userId))
 				.build(),
 				HttpStatus.OK);
 	}
 
 	@PutMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH)
-	public ResponseEntity<BlogAppResponse<?>> addAddress(@RequestBody Address address,
+	public ResponseEntity<BlogAppResponse<?>> addAddress(@Valid @RequestBody AddressDTO addressDTO,
 														 @PathVariable Integer userId){
 		return new ResponseEntity<>(BlogAppResponse.builder()
 				.status(ResponseStatus.SUCCESS)
 				.message("User Address added successfully")
-				.body(userService.addAddress(address,userId))
+				.body(userService.addAddress(addressDTO,userId))
 				.build(),
 				HttpStatus.OK);
 	}
@@ -144,12 +143,12 @@ public class UserController {
 
 	@PutMapping("/{" + USER_PARAMETER + "}"+ ADDRESS_PATH +"/{" + ADDRESS_PARAMETER + "}")
 	public ResponseEntity<BlogAppResponse<?>> updateAddress(@PathVariable Integer userId,
-															@RequestBody Address address,
+															@Valid @RequestBody AddressDTO addressDTO,
 															@PathVariable Integer addressId){
 		return new ResponseEntity<>(BlogAppResponse.builder()
 				.status(ResponseStatus.SUCCESS)
 				.message("User Address updated successfully")
-				.body(userService.updateAddress(address,userId,addressId))
+				.body(userService.updateAddress(addressDTO,userId,addressId))
 				.build(),
 				HttpStatus.OK);
 	}
@@ -166,7 +165,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{" + USER_PARAMETER + "}" + CHANGE_PASSWORD)
-	public ResponseEntity<BlogAppResponse<?>> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest,
+	public ResponseEntity<BlogAppResponse<?>> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest,
 															 @PathVariable Integer userId){
 		return new ResponseEntity<>(BlogAppResponse.builder()
 				.status(ResponseStatus.SUCCESS)
