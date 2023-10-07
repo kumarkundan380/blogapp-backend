@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(loginRequest.getUserName());
         return LoginResponse.builder()
                 .token(token)
-                .user( commonService.convertUserToUserDTO(userRepository.getUserByUsername(loginRequest.getUserName())))
+                .user( commonService.convertUserToUserDTO(userRepository.getUserByUserName(loginRequest.getUserName())))
                 .build();
 
     }

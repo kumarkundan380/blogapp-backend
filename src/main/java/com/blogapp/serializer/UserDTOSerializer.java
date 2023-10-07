@@ -39,11 +39,12 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
         for(RoleDTO roleDTO: user.getRoles()){
             gen.writeStartObject();
             gen.writeNumberField("roleId", roleDTO.getRoleId());
-            gen.writeStringField("roleName",roleDTO.getRoleName().getValue());
+            gen.writeStringField("roleName",roleDTO.getRoleName());
             gen.writeStringField("description", roleDTO.getDescription());
             gen.writeEndObject();
         }
         gen.writeEndArray();
+        gen.writeFieldName("addresses");
         gen.writeStartArray();
         for(AddressDTO addressDTO: user.getAddresses()){
             gen.writeStartObject();
@@ -54,13 +55,14 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
             gen.writeStringField("state",addressDTO.getState());
             gen.writeStringField("country",addressDTO.getCountry());
             gen.writeStringField("postalCode",addressDTO.getPostalCode());
+            gen.writeEndObject();
         }
         gen.writeEndArray();
         if(AuthorityUtil.isAdminRole()) {
             gen.writeStringField("createdAt", user.getCreatedAt().toString());
             gen.writeStringField("updatedAt", user.getUpdatedAt().toString());
             gen.writeStringField("status", user.getUserStatus().getValue());
-            gen.writeBooleanField("isUserVerified", user.getIsUserVerified());
+            gen.writeBooleanField("isUserVerified", user.getIsVerified());
             gen.writeBooleanField("isAccountExpired", user.getIsAccountExpired());
             gen.writeBooleanField("isCredentialsExpired", user.getIsCredentialsExpired());
             gen.writeBooleanField("isAccountLocked", user.getIsAccountLocked());

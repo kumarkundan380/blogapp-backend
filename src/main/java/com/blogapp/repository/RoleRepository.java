@@ -9,8 +9,8 @@ import java.util.Set;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 
-	Optional<Role> findByRoleName(UserRole userRole);
+	Optional<Role> findByRoleName(String roleName);
 
-	Set<Role> findByRoleNameIn(Set<UserRole> userRoles);
+	Set<Role> findByRoleNameIn(Set<String> userRoles);
 
 }

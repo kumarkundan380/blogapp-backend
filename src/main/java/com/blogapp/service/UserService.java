@@ -15,9 +15,9 @@ public interface UserService {
     UserDTO getUserById(Integer userId);
     BlogAppPageableResponse<?> getAllUser(Integer pageNumber, Integer pageSize);
     void deleteUser(Integer userId);
-    UserDTO updateRole(Set<UserRole> userRoles, Integer userId);
+    UserDTO addRole(Set<RoleDTO> roles, Integer userId);
     Set<RoleDTO> geAllRoles();
-    UserDTO deleteRole(Set<UserRole> userRoles, Integer userId);
+    UserDTO deleteRole(Set<RoleDTO> roles, Integer userId);
     UserDTO addAddress(AddressDTO addressDTO, Integer userId);
     Set<AddressDTO> findAddress(Integer userId);
     UserDTO updateAddress(AddressDTO addressDTO, Integer userId, Integer addressId);

@@ -36,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = modelMapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
-        Optional<Role> role = roleRepository.findByRoleName(UserRole.USER);
+        Optional<Role> role = roleRepository.findByRoleName(UserRole.USER.getValue());
         if(role.isPresent()){
             user.getRoles().add(role.get());
             log.info("Saving user information into data base");
@@ -119,7 +120,6 @@ public class UserServiceImpl implements UserService {
         UserValidation.validateUser(userDTO);
         if(AuthorityUtil.isAdminRole()) {
             user.setStatus(userDTO.getUserStatus());
-            user.setIsUserVerified(userDTO.getIsUserVerified());
             return getUpdatedUser(user,userDTO);
         } else {
             if(!userRepository.isDeletedUser(userDTO.getUserName())){
@@ -165,12 +165,12 @@ public class UserServiceImpl implements UserService {
         log.info("getAllUsers method called");
         return BlogAppPageableResponse.builder()
                 .content(userDTOS)
-                .pageNumber(pageUsers.getNumber())
-                .pageSize(pageUsers.getSize())
-                .totalElement(pageUsers.getTotalElements())
-                .totalPages(pageUsers.getTotalPages())
-                .isLast(pageUsers.isLast())
-                .isFirst(pageUsers.isFirst())
+                .pageNumber(ObjectUtils.isEmpty(pageUsers)?0:pageUsers.getNumber())
+                .pageSize(ObjectUtils.isEmpty(pageUsers)?0:pageUsers.getSize())
+                .totalElement(ObjectUtils.isEmpty(pageUsers)?0:pageUsers.getTotalElements())
+                .totalPages(ObjectUtils.isEmpty(pageUsers)?0:pageUsers.getTotalPages())
+                .isLast(ObjectUtils.isEmpty(pageUsers)?null:pageUsers.isLast())
+                .isFirst(ObjectUtils.isEmpty(pageUsers)?null:pageUsers.isFirst())
                 .build();
 
     }
@@ -198,11 +198,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDTO updateRole(Set<UserRole> userRoles, Integer userId) {
+    public UserDTO addRole(Set<RoleDTO> userRoles, Integer userId) {
         log.info("updateUserRole method invoking");
         if(AuthorityUtil.isAdminRole()) {
             User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
-            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles);
+            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles.stream().map(RoleDTO::getRoleName).collect(Collectors.toSet()));
             user.getRoles().addAll(roles);
             log.info("Saving user information into data base");
             user = userRepository.save(user);
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
         log.info("geAllRoles method invoking");
         if(AuthorityUtil.isAdminRole()) {
             List<Role> roles = roleRepository.findAll();
-            return roles.stream().map(r -> modelMapper.map(r, RoleDTO.class)).collect(Collectors.toSet());
+            return roles.stream().map(role -> modelMapper.map(role, RoleDTO.class)).collect(Collectors.toSet());
         } else {
             log.error("You do not have permission to add role");
             throw new BlogAppException("You do not have permission to add role");
@@ -227,11 +227,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDTO deleteRole(Set<UserRole> userRoles, Integer userId) {
+    public UserDTO deleteRole(Set<RoleDTO> userRoles, Integer userId) {
         log.info("deleteRole method invoking");
         if(AuthorityUtil.isAdminRole()) {
             User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
-            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles);
+            Set<Role> roles = roleRepository.findByRoleNameIn(userRoles.stream().map(RoleDTO::getRoleName).collect(Collectors.toSet()));
             user.getRoles().removeAll(roles);
             log.info("Saving user information into data base");
             user = userRepository.save(user);
@@ -355,7 +355,7 @@ public class UserServiceImpl implements UserService {
                 throw new BlogAppException("Username already exist. Please try other Username");
             }
             if(!AuthorityUtil.isAdminRole()){
-                log.info("Setting isVerified field false for new Username");
+                log.info("Assign isVerified field false for new Username");
                 user.setIsUserVerified(Boolean.FALSE);
             }
         }

@@ -29,7 +29,10 @@ public class CommonServiceImpl implements CommonService {
         UserDTO userDTO = modelMapper.map(user,UserDTO.class);
         if(AuthorityUtil.isAdminRole()){
             userDTO.setUserStatus(user.getStatus());
-            userDTO.setIsUserVerified(user.getIsUserVerified());
+            userDTO.setIsVerified(user.getIsUserVerified());
+            userDTO.setIsAccountExpired(!user.getAccountNonExpired());
+            userDTO.setIsAccountLocked(!user.getAccountNonLocked());
+            userDTO.setIsCredentialsExpired(!user.getCredentialsNonExpired());
         }
         Set<RoleDTO> roleDTOS = user.getRoles().stream().map(r -> modelMapper.map(r, RoleDTO.class)).collect(Collectors.toSet());
         userDTO.setRoles(roleDTOS);

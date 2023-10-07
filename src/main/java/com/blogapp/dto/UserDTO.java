@@ -46,7 +46,7 @@ public class UserDTO implements Serializable {
     private Gender gender;
     private String phoneNumber;
     private UserStatus userStatus;
-    private Boolean isUserVerified;
+    private Boolean isVerified;
     private Set<RoleDTO> roles = new HashSet<>();
     private Set<AddressDTO> addresses = new HashSet<>();
     private LocalDateTime createdAt;

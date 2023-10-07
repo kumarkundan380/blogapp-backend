@@ -33,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 user.getCredentialsNonExpired(),
                 user.getAccountNonLocked(),
                 user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getRoleName().getValue()))
+                        .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                         .collect(Collectors.toList()));
     }
 

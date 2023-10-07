@@ -43,7 +43,7 @@ public class Address extends BaseEntity {
 	@Column(name = "postal_code")
 	private String postalCode;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	@JsonBackReference
 	private User user;

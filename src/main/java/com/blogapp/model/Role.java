@@ -32,8 +32,7 @@ public class Role extends BaseEntity {
 	private Integer roleId;
 
 	@Column(name = "role_name", nullable = false, unique = true)
-	@Enumerated(EnumType.STRING)
-	private UserRole roleName;
+	private String roleName;
 
 	@Column(name = "description", nullable = false)
 	private String description;

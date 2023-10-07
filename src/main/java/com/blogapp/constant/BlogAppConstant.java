@@ -24,8 +24,6 @@ public class BlogAppConstant {
     public static final String DEFAULT_IMAGE = "default.jpg";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_PREFIX = "Bearer ";
-
-    public static final String BASE_PATH_ROLE = COMMON_PATH + "/roles";
     public static final String BASE_PATH_AUTH = COMMON_PATH + "/auth";
     public static final String LOGIN = "/login";
 
@@ -57,12 +55,15 @@ public class BlogAppConstant {
             BASE_PATH_AUTH + LOGIN,
             BASE_PATH_USER ,
             BASE_PATH_USER + VERIFY_USER +"/**",
-            BASE_PATH_ROLE,
             "/v3/api-docs",
             "/v2/api-docs",
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/webjars/**"
+    };
+
+    public static final String[] ADMIN_URLS = {
+            BASE_PATH_USER + "/**"
     };
 
 }
