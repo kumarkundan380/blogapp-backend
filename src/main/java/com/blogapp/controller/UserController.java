@@ -120,6 +120,17 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    @GetMapping(ROLES_PATH)
+    public ResponseEntity<BlogAppResponse<?>> getAllRole() {
+        return new ResponseEntity<>(BlogAppResponse.builder()
+                .status(ResponseStatus.SUCCESS)
+                .message("Role fetch successfully")
+                .body(userService.geAllRoles())
+                .build(),
+                HttpStatus.OK);
+    }
+
+
     @PostMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH)
     public ResponseEntity<BlogAppResponse<?>> addAddress(@Valid @RequestBody AddressDTO addressDTO,
                                                          @PathVariable Integer userId) {

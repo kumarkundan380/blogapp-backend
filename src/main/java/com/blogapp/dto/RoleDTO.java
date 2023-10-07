@@ -1,6 +1,5 @@
 package com.blogapp.dto;
 
-import com.blogapp.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

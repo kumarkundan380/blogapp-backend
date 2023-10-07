@@ -29,14 +29,20 @@ import static com.blogapp.constant.BlogAppConstant.VERIFY_USER;
 @Slf4j
 public class EmailUtil {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
 
-    @Autowired
-    private VerificationTokenService verificationTokenService;
+    private final JavaMailSender javaMailSender;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+
+    private final VerificationTokenService verificationTokenService;
+
+
+    private final String fromEmail;
+
+    public EmailUtil(JavaMailSender javaMailSender, VerificationTokenService verificationTokenService,@Value("${spring.mail.username}") String fromEmail) {
+        this.javaMailSender = javaMailSender;
+        this.verificationTokenService = verificationTokenService;
+        this.fromEmail = fromEmail;
+    }
 
     public void sendEmail(String toEmail, String body, String subject) {
         log.info("sendEmail method invoking");

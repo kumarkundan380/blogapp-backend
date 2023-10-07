@@ -7,17 +7,12 @@ import com.blogapp.util.AuthorityUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 public class UserDTOSerializer extends StdSerializer<UserDTO> {
-
-    public UserDTOSerializer() {
-        this(null);
-    }
 
     public UserDTOSerializer(Class<UserDTO> userDTOClass) {
         super(userDTOClass);

@@ -2,7 +2,6 @@ package com.blogapp.security;
 
 import com.blogapp.exception.BlogAppException;
 import com.blogapp.repository.UserRepository;
-import com.blogapp.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

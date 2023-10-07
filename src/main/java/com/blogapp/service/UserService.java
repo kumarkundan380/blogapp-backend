@@ -3,7 +3,6 @@ package com.blogapp.service;
 import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
-import com.blogapp.enums.UserRole;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppPageableResponse;
 

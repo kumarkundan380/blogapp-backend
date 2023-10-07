@@ -4,7 +4,6 @@ import com.blogapp.enums.Gender;
 import com.blogapp.enums.UserStatus;
 import com.blogapp.serializer.UserDTOSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
