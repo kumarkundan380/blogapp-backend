@@ -2,14 +2,17 @@ package com.blogapp.enums;
 
 public enum UserRole {
     USER ("USER"),
-    ADMIN ("ADMIN");
+    ADMIN ("ADMIN"),
+    SUPER_ADMIN("SUPER ADMIN"),
+    MODERATE("MODERATE");
 
     private final String value;
 
-    public String getValue() {
-        return value;
-    }
     UserRole(String value){
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

@@ -1,7 +1,7 @@
 package com.blogapp.security;
 
 import com.blogapp.exception.BlogAppException;
-import com.blogapp.service.UserService;
+import com.blogapp.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,13 +27,13 @@ public class JwtUtil {
 
     private final Long expirationTime;
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public JwtUtil(@Value("${blog.app.jwt.secret}") String secretKey, @Value("${blog.app.jwt.expiration.time}") Long expirationTime, UserService userService) {
+    public JwtUtil(@Value("${blog.app.jwt.secret}") String secretKey, @Value("${blog.app.jwt.expiration.time}") Long expirationTime, UserRepository userRepository) {
         this.secretKey = secretKey;
         this.expirationTime = expirationTime;
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     // Generate Token
@@ -85,7 +85,7 @@ public class JwtUtil {
 
     // Validate UserName in token and database, Expiration Time
     public boolean validateToken(String token, String userName) {
-        return (getUserNameFromJwtToken(token).equals(userService.getUserByUsername(userName).getUserName()) && !isTokenExpire(token));
+        return (getUserNameFromJwtToken(token).equals(userRepository.getUserByUserName(userName).getUserName()) && !isTokenExpire(token));
     }
 
     private Key getSigningKey() {

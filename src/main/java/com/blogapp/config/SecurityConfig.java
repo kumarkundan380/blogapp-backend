@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static com.blogapp.constant.BlogAppConstant.ADMIN_URLS;
 import static com.blogapp.constant.BlogAppConstant.PUBLIC_URLS;
-import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ROLE;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
 
 @Configuration
@@ -38,7 +38,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests( request ->
 					request.requestMatchers(PUBLIC_URLS).permitAll()
 						.requestMatchers(HttpMethod.POST, BASE_PATH_USER).permitAll()
-						.requestMatchers(BASE_PATH_ROLE).hasAuthority(UserRole.ADMIN.getValue())
+						.requestMatchers(HttpMethod.PUT,ADMIN_URLS).hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.DELETE,ADMIN_URLS).hasAuthority(UserRole.ADMIN.getValue())
 						.anyRequest()
 						.authenticated())
 				.authenticationProvider(authenticationProvider)

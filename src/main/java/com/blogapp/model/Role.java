@@ -1,13 +1,9 @@
 package com.blogapp.model;
 
-import com.blogapp.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
@@ -32,8 +28,7 @@ public class Role extends BaseEntity {
 	private Integer roleId;
 
 	@Column(name = "role_name", nullable = false, unique = true)
-	@Enumerated(EnumType.STRING)
-	private UserRole roleName;
+	private String roleName;
 
 	@Column(name = "description", nullable = false)
 	private String description;

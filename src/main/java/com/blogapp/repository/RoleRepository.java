@@ -1,6 +1,5 @@
 package com.blogapp.repository;
 
-import com.blogapp.enums.UserRole;
 import com.blogapp.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,8 +8,8 @@ import java.util.Set;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 
-	Optional<Role> findByRoleName(UserRole userRole);
+	Optional<Role> findByRoleName(String roleName);
 
-	Set<Role> findByRoleNameIn(Set<UserRole> userRoles);
+	Set<Role> findByRoleNameIn(Set<String> userRoles);
 
 }

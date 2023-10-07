@@ -4,7 +4,6 @@ import com.blogapp.enums.Gender;
 import com.blogapp.enums.UserStatus;
 import com.blogapp.serializer.UserDTOSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -46,7 +45,7 @@ public class UserDTO implements Serializable {
     private Gender gender;
     private String phoneNumber;
     private UserStatus userStatus;
-    private Boolean isUserVerified;
+    private Boolean isVerified;
     private Set<RoleDTO> roles = new HashSet<>();
     private Set<AddressDTO> addresses = new HashSet<>();
     private LocalDateTime createdAt;

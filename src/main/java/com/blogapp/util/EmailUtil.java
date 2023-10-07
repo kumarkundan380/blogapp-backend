@@ -29,14 +29,21 @@ import static com.blogapp.constant.BlogAppConstant.VERIFY_USER;
 @Slf4j
 public class EmailUtil {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+
+    private final JavaMailSender javaMailSender;
+
+
+    private final VerificationTokenService verificationTokenService;
+
+
+    private final String fromEmail;
 
     @Autowired
-    private VerificationTokenService verificationTokenService;
-
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    public EmailUtil(JavaMailSender javaMailSender, VerificationTokenService verificationTokenService,@Value("${spring.mail.username}") String fromEmail) {
+        this.javaMailSender = javaMailSender;
+        this.verificationTokenService = verificationTokenService;
+        this.fromEmail = fromEmail;
+    }
 
     public void sendEmail(String toEmail, String body, String subject) {
         log.info("sendEmail method invoking");
@@ -67,10 +74,11 @@ public class EmailUtil {
         messageHelper.setText(content,true);
         try {
             log.info("attachment fetching");
-            FileSystemResource fileSystemResource = new FileSystemResource(ResourceUtils.getFile("classpath:logo/logo.png"));
+            FileSystemResource fileSystemResource = new FileSystemResource(ResourceUtils.getFile("classpath:logo/loading.gif"));
             messageHelper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()), fileSystemResource);
             log.info("sending mail");
             javaMailSender.send(mimeMessage);
+            log.info("email sent");
         } catch (FileNotFoundException e) {
             log.error("File not found in given location"+e.getMessage());
             throw new BlogAppException("File not found in given location");
@@ -102,7 +110,7 @@ public class EmailUtil {
                 "</div> <br>" +
                 "<p>This Link will expire in 15 minutes.</p><br>" +
                 "Thank you,<br>" +
-                "BlogApp Portal </p>";
+                "BlogApp</p>";
         log.info("getContent method called");
         return content;
     }
