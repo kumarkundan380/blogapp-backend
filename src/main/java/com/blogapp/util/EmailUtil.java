@@ -38,6 +38,7 @@ public class EmailUtil {
 
     private final String fromEmail;
 
+    @Autowired
     public EmailUtil(JavaMailSender javaMailSender, VerificationTokenService verificationTokenService,@Value("${spring.mail.username}") String fromEmail) {
         this.javaMailSender = javaMailSender;
         this.verificationTokenService = verificationTokenService;
