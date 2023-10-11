@@ -14,6 +14,10 @@ import java.io.IOException;
 @Component
 public class UserDTOSerializer extends StdSerializer<UserDTO> {
 
+    public UserDTOSerializer() {
+        this(null);
+    }
+
     public UserDTOSerializer(Class<UserDTO> userDTOClass) {
         super(userDTOClass);
     }

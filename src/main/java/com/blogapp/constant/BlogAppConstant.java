@@ -25,6 +25,15 @@ public class BlogAppConstant {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_PREFIX = "Bearer ";
     public static final String BASE_PATH_AUTH = COMMON_PATH + "/auth";
+    public static final String BASE_PATH_IMAGE = COMMON_PATH + "/image";
+
+    public static final String IMAGE_PARAMETER = "image";
+
+    public static final String PRESIGNED_PARAMETER = "fileName";
+
+    public static final String UPLOAD_PRESIGNED_URL = "/upload/presigned/url";
+    public static final String DOWNLOAD_PRESIGNED_URL = "/download/presigned/url";
+
     public static final String LOGIN = "/login";
 
     public static final String BASE_PATH_CATEGORY = COMMON_PATH + CATEGORY_PATH;
@@ -43,11 +52,7 @@ public class BlogAppConstant {
     public static final String SEARCH_POST = "/search";
     public static final String UPLOAD_IMAGE = "/image/upload";
     public static final String DOWNLOAD_IMAGE = "/download/image";
-    public static final String UPLOAD_PRESIGNED_URL = "/upload/presigned/url";
-    public static final String DOWNLOAD_PRESIGNED_URL = "/download/presigned/url";
     public static final String POST_PARAMETER = "postId";
-    public static final String IMAGE_PARAMETER = "image";
-    public static final String PRESIGNED_PARAMETER = "fileName";
 
     public static final String ATTACHMENT_PATH = "/home/kundan/SpringBoot/BlogAppBackendSigleModel/src/main/resources/logo/logo.png";
 
