@@ -33,12 +33,11 @@ public class ImageController {
     }
 
     @PostMapping("/{" + USER_PARAMETER + "}")
-    public ResponseEntity<BlogAppResponse<?>> uploadImage(@RequestParam(IMAGE_PARAMETER) MultipartFile image,
-                                                          @PathVariable Integer userId) {
+    public ResponseEntity<BlogAppResponse<?>> uploadImage(@RequestParam(IMAGE_PARAMETER) MultipartFile image) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("Images Uploaded successfully")
-                .body(imageService.uploadImageOnS3(image,userId))
+                .body(imageService.uploadImageOnS3(image))
                 .build(),
                 HttpStatus.CREATED);
     }

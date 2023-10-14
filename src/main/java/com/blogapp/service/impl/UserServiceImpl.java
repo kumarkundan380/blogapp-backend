@@ -18,12 +18,15 @@ import com.blogapp.repository.VerificationTokenRepository;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppPageableResponse;
 import com.blogapp.service.CommonService;
+import com.blogapp.service.ImageService;
 import com.blogapp.service.UserService;
 import com.blogapp.util.AuthorityUtil;
 import com.blogapp.util.EmailUtil;
 import com.blogapp.validation.AddressValidation;
 import com.blogapp.validation.PasswordChangedRequestValidation;
 import com.blogapp.validation.UserValidation;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +41,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -66,8 +71,12 @@ public class UserServiceImpl implements UserService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final CommonService commonService;
 
+    private final ObjectMapper objectMapper;
+
+    private final ImageService imageService;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AddressRepository addressRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository, EmailUtil emailUtil, VerificationTokenRepository verificationTokenRepository,CommonService commonService) {
+    public UserServiceImpl(UserRepository userRepository, AddressRepository addressRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepository roleRepository, EmailUtil emailUtil, VerificationTokenRepository verificationTokenRepository,CommonService commonService, ObjectMapper objectMapper, ImageService imageService) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.modelMapper = modelMapper;
@@ -76,12 +85,60 @@ public class UserServiceImpl implements UserService {
         this.emailUtil = emailUtil;
         this.verificationTokenRepository = verificationTokenRepository;
         this.commonService = commonService;
+        this.objectMapper = objectMapper;
+        this.imageService = imageService;
     }
+
+//    @Override
+//    @Transactional(rollbackOn = Exception.class)
+//    public UserDTO registerUser(UserDTO userDTO) {
+//        log.info("addUser method invoking");
+//        UserValidation.validateUser(userDTO);
+//        if (!StringUtils.hasText(userDTO.getPassword().trim())) {
+//            log.error("Password is empty");
+//            throw new BlogAppException("Password cannot be empty");
+//        }
+//        userDTO.setPassword(userDTO.getPassword().trim());
+//        if(userRepository.isUserExist(userDTO.getUserName())){
+//            log.error("Username already exist");
+//            throw new BlogAppException("Username already exist. Please try other Username");
+//        }
+//        User user = modelMapper.map(userDTO, User.class);
+//        user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
+//        Optional<Role> role = roleRepository.findByRoleName(UserRole.USER.getValue());
+//        if(role.isPresent()){
+//            user.getRoles().add(role.get());
+//            log.info("Saving user information into data base");
+//            user = userRepository.save(user);
+//            userDTO = commonService.convertUserToUserDTO(user);
+//            User finalUser = user;
+//            log.info("Sending verification email");
+//            CompletableFuture.runAsync(() -> sendVerificationEmail(finalUser));
+//            log.info("addUser method called");
+//            return userDTO;
+//        }
+//        log.error("Role is not available");
+//        throw new BlogAppException("Role is not available");
+//
+//    }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDTO registerUser(UserDTO userDTO) {
+    public UserDTO registerUser(MultipartFile image,String userData) {
         log.info("addUser method invoking");
+        UserDTO userDTO = null;
+        try{
+           userDTO  = objectMapper.readValue(userData, UserDTO.class);
+        } catch (JsonProcessingException e){
+            throw new BlogAppException("UserData is not in proper format");
+        }
+        String imageUrl = null;
+        if(!image.isEmpty()) {
+            Map<String,String> imageData = imageService.uploadImageOnCloudinary(image);
+            if(imageData.containsKey("url")){
+                imageUrl = imageData.get("url");
+            }
+        }
         UserValidation.validateUser(userDTO);
         if (!StringUtils.hasText(userDTO.getPassword().trim())) {
             log.error("Password is empty");
@@ -94,6 +151,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = modelMapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
+        user.setUserImage(imageUrl);
         Optional<Role> role = roleRepository.findByRoleName(UserRole.USER.getValue());
         if(role.isPresent()){
             user.getRoles().add(role.get());
@@ -110,6 +168,7 @@ public class UserServiceImpl implements UserService {
         throw new BlogAppException("Role is not available");
 
     }
+
 
     @Override
     @Transactional(rollbackOn = Exception.class)

@@ -5,11 +5,14 @@ import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppPageableResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
 public interface UserService {
-    UserDTO registerUser(UserDTO user);
+//    UserDTO registerUser(UserDTO user);
+    UserDTO registerUser(MultipartFile image, String userData);
     UserDTO updateUser(UserDTO user, Integer userId);
     UserDTO getUserById(Integer userId);
     BlogAppPageableResponse<?> getAllUser(Integer pageNumber, Integer pageSize);

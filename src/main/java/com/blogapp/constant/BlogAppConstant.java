@@ -29,6 +29,8 @@ public class BlogAppConstant {
 
     public static final String IMAGE_PARAMETER = "image";
 
+    public static final String USER_DATA = "userData";
+
     public static final String PRESIGNED_PARAMETER = "fileName";
 
     public static final String UPLOAD_PRESIGNED_URL = "/upload/presigned/url";
@@ -55,6 +57,10 @@ public class BlogAppConstant {
     public static final String POST_PARAMETER = "postId";
 
     public static final String ATTACHMENT_PATH = "/home/kundan/SpringBoot/BlogAppBackendSigleModel/src/main/resources/logo/logo.png";
+    public static final String CLOUDINARY_CLOUD_NAME = "cloud_name";
+    public static final String CLOUDINARY_API_KEY = "api_key";
+    public static final String CLOUDINARY_API_SECRET = "api_secret";
+    public static final String CLOUDINARY_SECURE= "secure";
 
     public static final String[] PUBLIC_URLS = {
             BASE_PATH_AUTH + LOGIN,
