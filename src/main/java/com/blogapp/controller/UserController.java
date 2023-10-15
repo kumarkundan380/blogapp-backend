@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -27,12 +28,14 @@ import static com.blogapp.constant.BlogAppConstant.ADDRESS_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.ADDRESS_PATH;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
 import static com.blogapp.constant.BlogAppConstant.CHANGE_PASSWORD;
+import static com.blogapp.constant.BlogAppConstant.IMAGE_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.PAGE_NUMBER;
 import static com.blogapp.constant.BlogAppConstant.PAGE_NUMBER_VALUE;
 import static com.blogapp.constant.BlogAppConstant.PAGE_SIZE;
 import static com.blogapp.constant.BlogAppConstant.PAGE_SIZE_VALUE;
 import static com.blogapp.constant.BlogAppConstant.ROLES_PATH;
 import static com.blogapp.constant.BlogAppConstant.TOKEN_PARAMETER;
+import static com.blogapp.constant.BlogAppConstant.USER_DATA;
 import static com.blogapp.constant.BlogAppConstant.USER_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.VERIFY_USER;
 
@@ -47,12 +50,23 @@ public class UserController {
         this.userService = userService;
     }
 
+//    @PostMapping
+//    public ResponseEntity<BlogAppResponse<?>> registerUser(@Valid @RequestBody UserDTO user) {
+//        return new ResponseEntity<>(BlogAppResponse.builder()
+//                .status(ResponseStatus.SUCCESS)
+//                .message("Welcome to Blog App, please verify your email address")
+//                .body(userService.registerUser(user))
+//                .build(),
+//                HttpStatus.CREATED);
+//    }
+
     @PostMapping
-    public ResponseEntity<BlogAppResponse<?>> registerUser(@Valid @RequestBody UserDTO user) {
+    public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(IMAGE_PARAMETER)MultipartFile image,
+                                                           @RequestParam(USER_DATA) String userData) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("Welcome to Blog App, please verify your email address")
-                .body(userService.registerUser(user))
+                .body(userService.registerUser(image,userData))
                 .build(),
                 HttpStatus.CREATED);
     }
@@ -151,6 +165,18 @@ public class UserController {
                 .build(),
                 HttpStatus.OK);
     }
+
+    @GetMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH + "/{" + ADDRESS_PARAMETER + "}")
+    public ResponseEntity<BlogAppResponse<?>> getOneAddress(@PathVariable Integer userId,
+                                                            @PathVariable Integer addressId) {
+        return new ResponseEntity<>(BlogAppResponse.builder()
+                .status(ResponseStatus.SUCCESS)
+                .message("Address fetch successfully")
+                .body(userService.getOneAddress(userId, addressId))
+                .build(),
+                HttpStatus.OK);
+    }
+
 
     @PutMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH + "/{" + ADDRESS_PARAMETER + "}")
     public ResponseEntity<BlogAppResponse<?>> updateAddress(@PathVariable Integer userId,

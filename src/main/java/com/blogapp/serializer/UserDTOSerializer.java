@@ -14,6 +14,10 @@ import java.io.IOException;
 @Component
 public class UserDTOSerializer extends StdSerializer<UserDTO> {
 
+    public UserDTOSerializer() {
+        this(null);
+    }
+
     public UserDTOSerializer(Class<UserDTO> userDTOClass) {
         super(userDTOClass);
     }
@@ -29,6 +33,7 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
         gen.writeStringField("gender", user.getGender().getValue());
         gen.writeStringField("phoneNumber", user.getPhoneNumber());
         gen.writeStringField("userImage", user.getUserImage());
+        gen.writeStringField("about", user.getAbout());
         gen.writeFieldName("roles");
         gen.writeStartArray();
         for(RoleDTO roleDTO: user.getRoles()){
