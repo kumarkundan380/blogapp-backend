@@ -166,6 +166,18 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    @GetMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH + "/{" + ADDRESS_PARAMETER + "}")
+    public ResponseEntity<BlogAppResponse<?>> getOneAddress(@PathVariable Integer userId,
+                                                            @PathVariable Integer addressId) {
+        return new ResponseEntity<>(BlogAppResponse.builder()
+                .status(ResponseStatus.SUCCESS)
+                .message("Address fetch successfully")
+                .body(userService.getOneAddress(userId, addressId))
+                .build(),
+                HttpStatus.OK);
+    }
+
+
     @PutMapping("/{" + USER_PARAMETER + "}" + ADDRESS_PATH + "/{" + ADDRESS_PARAMETER + "}")
     public ResponseEntity<BlogAppResponse<?>> updateAddress(@PathVariable Integer userId,
                                                             @Valid @RequestBody AddressDTO addressDTO,

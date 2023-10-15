@@ -319,7 +319,8 @@ public class UserServiceImpl implements UserService {
         log.info("findAddress method invoking");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
         Set<Address> addresses = addressRepository.findByUser(user);
-        return addresses.stream().map(address -> modelMapper.map(addresses, AddressDTO.class)).collect(Collectors.toSet());
+        Set<AddressDTO> addressDTOS = addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).collect(Collectors.toSet());
+        return addressDTOS;
     }
 
     @Override
@@ -334,6 +335,19 @@ public class UserServiceImpl implements UserService {
         address = addressRepository.save(address);
         user.getAddresses().add(address);
         return commonService.convertUserToUserDTO(user);
+    }
+
+    @Override
+    public AddressDTO getOneAddress(Integer userId, Integer addressId) {
+        log.info("deleteAddress method invoking");
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        Set<Address> addresses = user.getAddresses();
+        Optional<Address> optionalAddress = addresses.stream().filter(address -> addressId.equals(address.getAddressId())).findAny();
+        if(optionalAddress.isPresent()) {
+            return modelMapper.map(optionalAddress.get(),AddressDTO.class);
+        }
+        log.error("Address Id not matched");
+        throw new BlogAppException("Address Id not matched");
     }
 
     @Override

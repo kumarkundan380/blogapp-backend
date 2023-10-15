@@ -23,6 +23,7 @@ public interface UserService {
     UserDTO addAddress(AddressDTO addressDTO, Integer userId);
     Set<AddressDTO> findAddress(Integer userId);
     UserDTO updateAddress(AddressDTO addressDTO, Integer userId, Integer addressId);
+    AddressDTO getOneAddress(Integer userId, Integer addressId);
     UserDTO deleteAddress(Integer userId,Integer addressId);
     String verifyUser(String token);
     String changePassword(PasswordChangeRequest passwordChangeRequest, Integer userId);
