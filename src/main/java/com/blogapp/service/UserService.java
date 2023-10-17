@@ -13,7 +13,8 @@ import java.util.Set;
 public interface UserService {
 //    UserDTO registerUser(UserDTO user);
     UserDTO registerUser(MultipartFile image, String userData);
-    UserDTO updateUser(UserDTO user, Integer userId);
+//    UserDTO updateUser(UserDTO user, Integer userId);
+    UserDTO updateUser(MultipartFile image, String userData, Integer userId);
     UserDTO getUserById(Integer userId);
     BlogAppPageableResponse<?> getAllUser(Integer pageNumber, Integer pageSize);
     void deleteUser(Integer userId);

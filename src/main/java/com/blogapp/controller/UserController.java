@@ -61,7 +61,7 @@ public class UserController {
 //    }
 
     @PostMapping
-    public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(IMAGE_PARAMETER)MultipartFile image,
+    public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(value = IMAGE_PARAMETER, required = false) MultipartFile image,
                                                            @RequestParam(USER_DATA) String userData) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
@@ -71,12 +71,24 @@ public class UserController {
                 HttpStatus.CREATED);
     }
 
+//    @PutMapping("/{" + USER_PARAMETER + "}")
+//    public ResponseEntity<BlogAppResponse<?>> updateUser(@Valid @RequestBody UserDTO user, @PathVariable Integer userId) {
+//        return new ResponseEntity<>(BlogAppResponse.builder()
+//                .status(ResponseStatus.SUCCESS)
+//                .message("User Updated successfully")
+//                .body(userService.updateUser(user, userId))
+//                .build(),
+//                HttpStatus.OK);
+//    }
+
     @PutMapping("/{" + USER_PARAMETER + "}")
-    public ResponseEntity<BlogAppResponse<?>> updateUser(@Valid @RequestBody UserDTO user, @PathVariable Integer userId) {
+    public ResponseEntity<BlogAppResponse<?>> updateUser(@RequestParam(value = IMAGE_PARAMETER, required = false)MultipartFile image,
+                                                         @RequestParam(USER_DATA) String userData,
+                                                         @PathVariable Integer userId) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("User Updated successfully")
-                .body(userService.updateUser(user, userId))
+                .body(userService.updateUser(image,userData, userId))
                 .build(),
                 HttpStatus.OK);
     }

@@ -61,8 +61,8 @@ public class UserDTOSerializer extends StdSerializer<UserDTO> {
         if(AuthorityUtil.isAdminRole()) {
             gen.writeStringField("createdAt", user.getCreatedAt().toString());
             gen.writeStringField("updatedAt", user.getUpdatedAt().toString());
-            gen.writeStringField("status", user.getUserStatus().getValue());
-            gen.writeBooleanField("isUserVerified", user.getIsVerified());
+            gen.writeStringField("userStatus", user.getUserStatus().getValue());
+            gen.writeBooleanField("isVerified", user.getIsVerified());
             gen.writeBooleanField("isAccountExpired", user.getIsAccountExpired());
             gen.writeBooleanField("isCredentialsExpired", user.getIsCredentialsExpired());
             gen.writeBooleanField("isAccountLocked", user.getIsAccountLocked());
