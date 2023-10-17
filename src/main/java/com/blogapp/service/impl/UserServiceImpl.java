@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
             throw new BlogAppException("UserData is not in proper format");
         }
         String imageUrl = null;
-        if(!image.isEmpty()) {
+        if(!ObjectUtils.isEmpty(image) && !image.isEmpty()) {
             Map<String,String> imageData = imageService.uploadImageOnCloudinary(image);
             if(imageData.containsKey("url")){
                 imageUrl = imageData.get("url");
@@ -170,15 +170,55 @@ public class UserServiceImpl implements UserService {
     }
 
 
+//    @Override
+//    @Transactional(rollbackOn = Exception.class)
+//    public UserDTO updateUser(UserDTO userDTO, Integer userId) {
+//        log.info("updateUser method invoking");
+//        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+//        log.info("validateUser method invoking");
+//        UserValidation.validateUser(userDTO);
+//        if(AuthorityUtil.isAdminRole()) {
+//            user.setStatus(userDTO.getUserStatus());
+//            return getUpdatedUser(user,userDTO);
+//        } else {
+//            if(!userRepository.isDeletedUser(userDTO.getUserName())){
+//                if(AuthorityUtil.isSameUser(userDTO.getUserName())){
+//                    return getUpdatedUser(user,userDTO);
+//                }
+//                log.error("You cannot update other user profile");
+//                throw new BlogAppException("You cannot update other user profile");
+//            }
+//            log.error("User is deleted");
+//            throw new BlogAppException("User is deleted");
+//        }
+//    }
+
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDTO updateUser(UserDTO userDTO, Integer userId) {
+    public UserDTO updateUser(MultipartFile image,String userData, Integer userId) {
         log.info("updateUser method invoking");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        UserDTO userDTO = null;
+        try{
+            userDTO  = objectMapper.readValue(userData, UserDTO.class);
+        } catch (JsonProcessingException e){
+            throw new BlogAppException("UserData is not in proper format");
+        }
         log.info("validateUser method invoking");
         UserValidation.validateUser(userDTO);
+        if(!ObjectUtils.isEmpty(image) && !image.isEmpty()) {
+            Map<String,String> imageData = imageService.uploadImageOnCloudinary(image);
+            if(imageData.containsKey("url")){
+                user.setUserImage(imageData.get("url"));
+            }
+        }
         if(AuthorityUtil.isAdminRole()) {
-            user.setStatus(userDTO.getUserStatus());
+            if(!ObjectUtils.isEmpty(userDTO.getUserStatus())){
+                user.setStatus(userDTO.getUserStatus());
+            }
+            if(!ObjectUtils.isEmpty(userDTO.getIsVerified())){
+                user.setIsUserVerified(userDTO.getIsVerified());
+            }
             return getUpdatedUser(user,userDTO);
         } else {
             if(!userRepository.isDeletedUser(userDTO.getUserName())){
@@ -192,6 +232,7 @@ public class UserServiceImpl implements UserService {
             throw new BlogAppException("User is deleted");
         }
     }
+
 
     @Override
     public UserDTO getUserById(Integer userId) {
@@ -433,6 +474,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         user.setGender(userDTO.getGender());
+        user.setAbout(userDTO.getAbout());
         log.info("Saving user information into data base");
         user = userRepository.save(user);
         userDTO = commonService.convertUserToUserDTO(user);
