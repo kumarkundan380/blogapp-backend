@@ -1,7 +1,9 @@
 package com.blogapp.service.impl;
 
+import com.blogapp.dto.PostDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
+import com.blogapp.model.Post;
 import com.blogapp.model.User;
 import com.blogapp.service.CommonService;
 import com.blogapp.util.AuthorityUtil;
@@ -38,5 +40,19 @@ public class CommonServiceImpl implements CommonService {
         userDTO.setRoles(roleDTOS);
         log.info("convertUserToUserDTO method called");
         return userDTO;
+    }
+
+    @Override
+    public PostDTO convertPostToPostDTO(Post post) {
+        log.info("convertPostToPostDTO method invoking");
+        PostDTO postDTO = modelMapper.map(post,PostDTO.class);
+        User user = post.getUser();
+        UserDTO userDTO = convertUserToUserDTO(user);
+        postDTO.setUser(userDTO);
+        if(AuthorityUtil.isAdminRole()){
+            postDTO.setStatus(post.getPostStatus());
+        }
+        log.info("convertUserToUserDTO method called");
+        return postDTO;
     }
 }

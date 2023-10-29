@@ -2,7 +2,6 @@ package com.blogapp.controller;
 
 import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
-import com.blogapp.dto.UserDTO;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppResponse;
@@ -125,12 +124,13 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/{" + USER_PARAMETER + "}/" + ROLES_PATH)
-    public ResponseEntity<BlogAppResponse<?>> addRole(@PathVariable Integer userId, @RequestBody Set<RoleDTO> roles) {
+//    @PutMapping("/{" + USER_PARAMETER + "}/" + ROLES_PATH)
+@PutMapping(ROLES_PATH + "/{" + USER_PARAMETER + "}/")
+    public ResponseEntity<BlogAppResponse<?>> updateRole(@RequestBody Set<RoleDTO> roles, @PathVariable Integer userId) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("User Role added successfully")
-                .body(userService.addRole(roles, userId))
+                .body(userService.updateRole(roles, userId))
                 .build(),
                 HttpStatus.OK);
     }

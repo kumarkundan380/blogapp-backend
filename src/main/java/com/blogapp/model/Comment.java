@@ -25,7 +25,7 @@ public class Comment extends BaseEntity {
 	@Column(name = "comment_id")
 	private Integer commentId;
 
-	@Column(nullable = false)
+	@Column(columnDefinition="TEXT",nullable = false)
 	private String content;
 	
 	@ManyToOne
