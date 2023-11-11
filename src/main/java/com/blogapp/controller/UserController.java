@@ -49,16 +49,6 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @PostMapping
-//    public ResponseEntity<BlogAppResponse<?>> registerUser(@Valid @RequestBody UserDTO user) {
-//        return new ResponseEntity<>(BlogAppResponse.builder()
-//                .status(ResponseStatus.SUCCESS)
-//                .message("Welcome to Blog App, please verify your email address")
-//                .body(userService.registerUser(user))
-//                .build(),
-//                HttpStatus.CREATED);
-//    }
-
     @PostMapping
     public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(value = IMAGE_PARAMETER, required = false) MultipartFile image,
                                                            @RequestParam(USER_DATA) String userData) {
@@ -69,16 +59,6 @@ public class UserController {
                 .build(),
                 HttpStatus.CREATED);
     }
-
-//    @PutMapping("/{" + USER_PARAMETER + "}")
-//    public ResponseEntity<BlogAppResponse<?>> updateUser(@Valid @RequestBody UserDTO user, @PathVariable Integer userId) {
-//        return new ResponseEntity<>(BlogAppResponse.builder()
-//                .status(ResponseStatus.SUCCESS)
-//                .message("User Updated successfully")
-//                .body(userService.updateUser(user, userId))
-//                .build(),
-//                HttpStatus.OK);
-//    }
 
     @PutMapping("/{" + USER_PARAMETER + "}")
     public ResponseEntity<BlogAppResponse<?>> updateUser(@RequestParam(value = IMAGE_PARAMETER, required = false)MultipartFile image,

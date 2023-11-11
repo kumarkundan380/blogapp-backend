@@ -27,8 +27,6 @@ import static com.blogapp.constant.BlogAppConstant.PAGE_SIZE_VALUE;
 import static com.blogapp.constant.BlogAppConstant.PENDING_POST;
 import static com.blogapp.constant.BlogAppConstant.POST_DATA;
 import static com.blogapp.constant.BlogAppConstant.POST_PARAMETER;
-import static com.blogapp.constant.BlogAppConstant.USER_DATA;
-import static com.blogapp.constant.BlogAppConstant.USER_PARAMETER;
 
 @RestController
 @RequestMapping(value = BASE_PATH_POST)

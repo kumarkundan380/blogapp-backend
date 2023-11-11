@@ -1,6 +1,5 @@
 package com.blogapp.validation;
 
-import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.CommentDTO;
 import com.blogapp.exception.BlogAppException;
 import lombok.extern.slf4j.Slf4j;
