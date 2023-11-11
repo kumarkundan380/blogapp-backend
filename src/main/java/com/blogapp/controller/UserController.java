@@ -124,12 +124,11 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-//    @PutMapping("/{" + USER_PARAMETER + "}/" + ROLES_PATH)
-@PutMapping(ROLES_PATH + "/{" + USER_PARAMETER + "}/")
+    @PutMapping("/{" + USER_PARAMETER + "}" + ROLES_PATH)
     public ResponseEntity<BlogAppResponse<?>> updateRole(@RequestBody Set<RoleDTO> roles, @PathVariable Integer userId) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
-                .message("User Role added successfully")
+                .message("User Role updated successfully")
                 .body(userService.updateRole(roles, userId))
                 .build(),
                 HttpStatus.OK);

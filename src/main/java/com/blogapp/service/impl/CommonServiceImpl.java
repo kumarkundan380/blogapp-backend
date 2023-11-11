@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,7 +55,7 @@ public class CommonServiceImpl implements CommonService {
         PostDTO postDTO = modelMapper.map(post,PostDTO.class);
         User user = post.getUser();
         UserDTO userDTO = convertUserToUserDTO(user);
-        Set<CommentDTO> commentsDTOS = new HashSet<>();
+        List<CommentDTO> commentsDTOS = new ArrayList<>();
         if(!CollectionUtils.isEmpty(post.getComments())) {
             for(Comment comment : post.getComments()){
                 UserDTO commentedUser = convertUserToUserDTO(comment.getUser());
@@ -61,6 +64,9 @@ public class CommonServiceImpl implements CommonService {
                 commentsDTOS.add(commentDTO);
             }
         }
+        commentsDTOS = commentsDTOS.stream()
+                .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
+                .collect(Collectors.toList());
         postDTO.setComments(commentsDTOS);
         postDTO.setUser(userDTO);
         if(AuthorityUtil.isAdminRole()){

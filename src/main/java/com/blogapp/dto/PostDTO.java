@@ -9,6 +9,8 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,7 +27,7 @@ public class PostDTO implements Serializable {
     private String imageUrl;
     private CategoryDTO category;
     private UserDTO user;
-    private Set<CommentDTO> comments;
+    private List<CommentDTO> comments = new ArrayList<>();
     private Integer userId;
     private Integer categoryId;
     private PostStatus status;
