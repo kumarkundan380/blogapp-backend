@@ -12,12 +12,14 @@ public class BlogAppConstant {
     public static final String PAGE_SIZE = "size";
     public static final String PAGE_NUMBER_VALUE = "0";
     public static final String PAGE_SIZE_VALUE = "10";
-    public static final String POST_SORT_FIELD = "createdAt";
+//    public static final String POST_SORT_FIELD = "createdAt";
+    public static final String COMMON_SORT_FIELD = "createdAt";
 
     public static final String APPROVED_POST = "/approved";
     public static final String PENDING_POST = "/pending";
     public static final String DELETED_POST = "/deleted";
     public static final String USER_SORT_FIELD = "firstName";
+
     public static final String CATEGORY_SORT_FIELD = "categoryTitle";
     public static final String CATEGORY_EXCEPTION = "Category";
     public static final String POST_EXCEPTION = "Post";
@@ -47,7 +49,7 @@ public class BlogAppConstant {
     public static final String BASE_PATH_CATEGORY = COMMON_PATH + CATEGORY_PATH;
     public static final String CATEGORY_PARAMETER = "categoryId";
 
-    public static final String BASE_PATH_COMMENT = COMMON_PATH + "/comment";
+    public static final String BASE_PATH_COMMENT = COMMON_PATH + "/comments";
     public static final String COMMENT_PARAMETER = "commentId";
 
     public static final String BASE_PATH_USER = COMMON_PATH + "/users";

@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 import static com.blogapp.constant.BlogAppConstant.CATEGORY_EXCEPTION;
+import static com.blogapp.constant.BlogAppConstant.COMMON_SORT_FIELD;
 import static com.blogapp.constant.BlogAppConstant.EXCEPTION_FIELD;
 import static com.blogapp.constant.BlogAppConstant.POST_EXCEPTION;
-import static com.blogapp.constant.BlogAppConstant.POST_SORT_FIELD;
 import static com.blogapp.constant.BlogAppConstant.USER_EXCEPTION;
 
 @Service
@@ -212,7 +212,7 @@ public class PostServiceImpl implements PostService {
 
     private BlogAppPageableResponse<?> getAllPost(List<PostStatus> postStatus,Integer pageNumber,Integer pageSize) {
         log.info("getAllPost method invoking");
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, POST_SORT_FIELD));
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, COMMON_SORT_FIELD));
         Page<Post> pagePosts = postRepository.findAllPostByStatus(postStatus, pageable);
         List<PostDTO> postDTOS = new ArrayList<>();
         List<Post> posts = null;

@@ -28,7 +28,6 @@ import static com.blogapp.constant.BlogAppConstant.PUBLIC_URLS;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
 
 @Configuration
-//@EnableWebMvc
 @EnableWebSecurity
 public class SecurityConfig {
 	private final AuthenticationProvider authenticationProvider;
@@ -49,7 +48,6 @@ public class SecurityConfig {
 							.requestMatchers(HttpMethod.GET, BASE_PATH_CATEGORY).permitAll()
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + APPROVED_POST).permitAll()
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + "/**").permitAll()
-							.requestMatchers(HttpMethod.PUT,BASE_PATH_USER + "/**").hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.POST,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.PUT,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.DELETE,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())

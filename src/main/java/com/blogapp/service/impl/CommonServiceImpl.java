@@ -1,8 +1,10 @@
 package com.blogapp.service.impl;
 
+import com.blogapp.dto.CommentDTO;
 import com.blogapp.dto.PostDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
+import com.blogapp.model.Comment;
 import com.blogapp.model.Post;
 import com.blogapp.model.User;
 import com.blogapp.service.CommonService;
@@ -11,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,11 +52,32 @@ public class CommonServiceImpl implements CommonService {
         PostDTO postDTO = modelMapper.map(post,PostDTO.class);
         User user = post.getUser();
         UserDTO userDTO = convertUserToUserDTO(user);
+        Set<CommentDTO> commentsDTOS = new HashSet<>();
+        if(!CollectionUtils.isEmpty(post.getComments())) {
+            for(Comment comment : post.getComments()){
+                UserDTO commentedUser = convertUserToUserDTO(comment.getUser());
+                CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
+                commentDTO.setUser(commentedUser);
+                commentsDTOS.add(commentDTO);
+            }
+        }
+        postDTO.setComments(commentsDTOS);
         postDTO.setUser(userDTO);
         if(AuthorityUtil.isAdminRole()){
             postDTO.setStatus(post.getPostStatus());
         }
         log.info("convertUserToUserDTO method called");
         return postDTO;
+    }
+
+    @Override
+    public CommentDTO convertCommentToCommentDTO(Comment comment) {
+        log.info("convertCommentToCommentDTO method invoking");
+        CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
+        PostDTO postDTO = convertPostToPostDTO(comment.getPost());
+        UserDTO userDTO = convertUserToUserDTO(comment.getUser());
+        commentDTO.setPost(postDTO);
+        commentDTO.setUser(userDTO);
+        return commentDTO;
     }
 }

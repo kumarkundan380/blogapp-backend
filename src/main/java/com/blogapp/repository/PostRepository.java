@@ -27,7 +27,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 	@Query("SELECT p FROM Post p WHERE p.postStatus in ?1")
 	Page<Post> findAllPostByStatus(List<PostStatus> postStatus, Pageable pageable);
 
-	@Query("SELECT p FROM Post p WHERE p.postId = ?1 and p.postStatus='APPROVED' ")
+	@Query("SELECT p Post FROM Post p WHERE p.postId = ?1 and p.postStatus='APPROVED'")
 	Optional<Post> getPostById(Integer postId);
 
 }
