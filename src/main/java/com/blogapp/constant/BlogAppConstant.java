@@ -28,6 +28,7 @@ public class BlogAppConstant {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_PREFIX = "Bearer ";
     public static final String BASE_PATH_AUTH = COMMON_PATH + "/auth";
+    public static final String BASE_PATH_ADMIN = COMMON_PATH + "/admin";
     public static final String BASE_PATH_IMAGE = COMMON_PATH + "/image";
     public static final String IMAGE_PARAMETER = "image";
     public static final String USER_DATA = "userData";

@@ -30,4 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 	@Query("SELECT p Post FROM Post p WHERE p.postId = ?1 and p.postStatus='APPROVED'")
 	Optional<Post> getPostById(Integer postId);
 
+	@Query("SELECT postStatus FROM Post p ")
+	List<String> getAllPostStatus();
+
 }

@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static com.blogapp.constant.BlogAppConstant.ADMIN_URLS;
 import static com.blogapp.constant.BlogAppConstant.APPROVED_POST;
+import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ADMIN;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_CATEGORY;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_POST;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
@@ -55,6 +56,7 @@ public class SecurityConfig {
 							.requestMatchers(HttpMethod.DELETE,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + PENDING_POST).hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + DELETED_POST).hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.GET,BASE_PATH_ADMIN).hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.DELETE,ADMIN_URLS).hasAuthority(UserRole.ADMIN.getValue())
 						.anyRequest()
 						.authenticated())

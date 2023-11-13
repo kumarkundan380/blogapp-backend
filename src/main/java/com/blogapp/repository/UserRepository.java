@@ -1,5 +1,8 @@
 package com.blogapp.repository;
+import java.util.List;
 import java.util.Optional;
+
+import com.blogapp.enums.PostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByUserName(String userName);
 	@Modifying
-	@Query("update User u set u.status='DELETED' where u.userId = ?1")
+	@Query("UPDATE User u set u.status='DELETED' WHERE u.userId = ?1")
 	void deleteUser(Integer userId);
 	@Query("SELECT u FROM User u WHERE u.status = ?1 AND u.isUserVerified = ?2 ")
 	Page<User> findAllUser(String status, Boolean isUserVerified, Pageable pageable);
@@ -21,5 +24,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	Boolean isUserExist(String userName);
 
 	User getUserByUserName(String userName);
+
+	@Query("SELECT u.status FROM User u")
+	List<String> getAllUserStatus();
+
+	@Query("SELECT count(*) FROM User u WHERE u.isUserVerified = ?1")
+	Long countAllPendingUser(Boolean isUserVerified);
+
+	@Query("SELECT count(*) FROM User u")
+	Long countAllUser();
 
 }
