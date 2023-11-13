@@ -1,5 +1,6 @@
 package com.blogapp.security;
 import com.blogapp.exception.BlogAppException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import static com.blogapp.constant.BlogAppConstant.AUTHORIZATION_HEADER;
 import static com.blogapp.constant.BlogAppConstant.AUTHORIZATION_PREFIX;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
@@ -36,6 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		log.info("doFilterInternal method invoking");
 		String jwtToken = parseJwtToken(request);
 		if(StringUtils.hasText(jwtToken)) {
 			String userName = jwtUtil.getUserNameFromJwtToken(jwtToken);
@@ -51,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 					SecurityContextHolder.getContext().setAuthentication(authToken);
 				} else {
+					log.info("Token is Not Valid");
 					throw new BlogAppException("Token is Not Valid");
 				}
 			}

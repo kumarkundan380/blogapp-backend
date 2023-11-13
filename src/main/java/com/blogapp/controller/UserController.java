@@ -2,7 +2,6 @@ package com.blogapp.controller;
 
 import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
-import com.blogapp.dto.UserDTO;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.response.BlogAppResponse;
@@ -50,16 +49,6 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @PostMapping
-//    public ResponseEntity<BlogAppResponse<?>> registerUser(@Valid @RequestBody UserDTO user) {
-//        return new ResponseEntity<>(BlogAppResponse.builder()
-//                .status(ResponseStatus.SUCCESS)
-//                .message("Welcome to Blog App, please verify your email address")
-//                .body(userService.registerUser(user))
-//                .build(),
-//                HttpStatus.CREATED);
-//    }
-
     @PostMapping
     public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(value = IMAGE_PARAMETER, required = false) MultipartFile image,
                                                            @RequestParam(USER_DATA) String userData) {
@@ -70,16 +59,6 @@ public class UserController {
                 .build(),
                 HttpStatus.CREATED);
     }
-
-//    @PutMapping("/{" + USER_PARAMETER + "}")
-//    public ResponseEntity<BlogAppResponse<?>> updateUser(@Valid @RequestBody UserDTO user, @PathVariable Integer userId) {
-//        return new ResponseEntity<>(BlogAppResponse.builder()
-//                .status(ResponseStatus.SUCCESS)
-//                .message("User Updated successfully")
-//                .body(userService.updateUser(user, userId))
-//                .build(),
-//                HttpStatus.OK);
-//    }
 
     @PutMapping("/{" + USER_PARAMETER + "}")
     public ResponseEntity<BlogAppResponse<?>> updateUser(@RequestParam(value = IMAGE_PARAMETER, required = false)MultipartFile image,
@@ -125,12 +104,12 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/{" + USER_PARAMETER + "}/" + ROLES_PATH)
-    public ResponseEntity<BlogAppResponse<?>> addRole(@PathVariable Integer userId, @RequestBody Set<RoleDTO> roles) {
+    @PutMapping("/{" + USER_PARAMETER + "}" + ROLES_PATH)
+    public ResponseEntity<BlogAppResponse<?>> updateRole(@RequestBody Set<RoleDTO> roles, @PathVariable Integer userId) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
-                .message("User Role added successfully")
-                .body(userService.addRole(roles, userId))
+                .message("User Role updated successfully")
+                .body(userService.updateRole(roles, userId))
                 .build(),
                 HttpStatus.OK);
     }

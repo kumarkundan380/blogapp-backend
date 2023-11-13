@@ -11,20 +11,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static com.blogapp.constant.BlogAppConstant.ADMIN_URLS;
-import static com.blogapp.constant.BlogAppConstant.PUBLIC_URLS;
+import static com.blogapp.constant.BlogAppConstant.APPROVED_POST;
+import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ADMIN;
+import static com.blogapp.constant.BlogAppConstant.BASE_PATH_CATEGORY;
+import static com.blogapp.constant.BlogAppConstant.BASE_PATH_POST;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
+import static com.blogapp.constant.BlogAppConstant.DELETED_POST;
+import static com.blogapp.constant.BlogAppConstant.PENDING_POST;
+import static com.blogapp.constant.BlogAppConstant.PUBLIC_URLS;
+import static com.blogapp.constant.BlogAppConstant.ROLES_PATH;
 
 @Configuration
-@EnableWebMvc
+@EnableWebSecurity
 public class SecurityConfig {
 	private final AuthenticationProvider authenticationProvider;
+
 	@Autowired
 	public SecurityConfig(AuthenticationProvider authenticationProvider) {
 		this.authenticationProvider = authenticationProvider;
@@ -37,8 +45,18 @@ public class SecurityConfig {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests( request ->
 					request.requestMatchers(PUBLIC_URLS).permitAll()
-						.requestMatchers(HttpMethod.POST, BASE_PATH_USER).permitAll()
-						.requestMatchers(HttpMethod.PUT,ADMIN_URLS).hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.POST, BASE_PATH_USER).permitAll()
+							.requestMatchers(HttpMethod.GET, BASE_PATH_CATEGORY).permitAll()
+							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + APPROVED_POST).permitAll()
+							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + "/**").permitAll()
+							.requestMatchers(HttpMethod.PUT,BASE_PATH_USER + "/**").hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.DELETE,BASE_PATH_USER + "/**").hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.POST,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.PUT,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.DELETE,BASE_PATH_CATEGORY + "/**").hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + PENDING_POST).hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + DELETED_POST).hasAuthority(UserRole.ADMIN.getValue())
+							.requestMatchers(HttpMethod.GET,BASE_PATH_ADMIN).hasAuthority(UserRole.ADMIN.getValue())
 							.requestMatchers(HttpMethod.DELETE,ADMIN_URLS).hasAuthority(UserRole.ADMIN.getValue())
 						.anyRequest()
 						.authenticated())

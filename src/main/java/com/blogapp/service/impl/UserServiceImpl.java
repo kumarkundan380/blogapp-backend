@@ -298,12 +298,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDTO addRole(Set<RoleDTO> userRoles, Integer userId) {
+    public UserDTO updateRole(Set<RoleDTO> userRoles, Integer userId) {
         log.info("updateUserRole method invoking");
         if(AuthorityUtil.isAdminRole()) {
             User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+            if(user.getRoles().stream().noneMatch(role -> UserRole.USER.getValue().equals(role.getRoleName()))) {
+                throw new BlogAppException("User Role can't be removed");
+            }
             Set<Role> roles = roleRepository.findByRoleNameIn(userRoles.stream().map(RoleDTO::getRoleName).collect(Collectors.toSet()));
-            user.getRoles().addAll(roles);
+            user.setRoles(roles);
             log.info("Saving user information into data base");
             user = userRepository.save(user);
             return commonService.convertUserToUserDTO(user);
