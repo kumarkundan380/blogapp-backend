@@ -60,4 +60,8 @@ public class Post extends BaseEntity {
 	@JsonManagedReference
 	private Set<Comment> comments = new HashSet<>();
 
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private Set<Activity> activities = new HashSet<>();
+
 }

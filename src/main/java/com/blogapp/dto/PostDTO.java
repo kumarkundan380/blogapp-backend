@@ -10,7 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,6 +29,7 @@ public class PostDTO implements Serializable {
     private CategoryDTO category;
     private UserDTO user;
     private List<CommentDTO> comments = new ArrayList<>();
+    private Set<ActivityDTO> activities = new HashSet<>();
     private Integer userId;
     private Integer categoryId;
     private PostStatus status;

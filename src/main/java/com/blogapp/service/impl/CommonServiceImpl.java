@@ -1,9 +1,11 @@
 package com.blogapp.service.impl;
 
+import com.blogapp.dto.ActivityDTO;
 import com.blogapp.dto.CommentDTO;
 import com.blogapp.dto.PostDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
+import com.blogapp.model.Activity;
 import com.blogapp.model.Comment;
 import com.blogapp.model.Post;
 import com.blogapp.model.User;
@@ -17,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,11 +65,21 @@ public class CommonServiceImpl implements CommonService {
                 commentDTO.setUser(commentedUser);
                 commentsDTOS.add(commentDTO);
             }
+            commentsDTOS = commentsDTOS.stream()
+                    .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
+                    .collect(Collectors.toList());
+            postDTO.setComments(commentsDTOS);
         }
-        commentsDTOS = commentsDTOS.stream()
-                .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
-                .collect(Collectors.toList());
-        postDTO.setComments(commentsDTOS);
+        Set<ActivityDTO> activityDTOS = new HashSet<>();
+        if(!CollectionUtils.isEmpty(post.getActivities())){
+            for(Activity activity : post.getActivities()){
+                UserDTO activityUser = convertUserToUserDTO(activity.getUser());
+                ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
+                activityDTO.setUser(activityUser);
+                activityDTOS.add(activityDTO);
+            }
+            postDTO.setActivities(activityDTOS);
+        }
         postDTO.setUser(userDTO);
         if(AuthorityUtil.isAdminRole()){
             postDTO.setStatus(post.getPostStatus());
@@ -83,6 +96,16 @@ public class CommonServiceImpl implements CommonService {
         UserDTO userDTO = convertUserToUserDTO(comment.getUser());
         commentDTO.setPost(postDTO);
         commentDTO.setUser(userDTO);
+        Set<ActivityDTO> activityDTOS = new HashSet<>();
+        if(!CollectionUtils.isEmpty(comment.getActivities())){
+            for(Activity activity : comment.getActivities()){
+                UserDTO activityUser = convertUserToUserDTO(activity.getUser());
+                ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
+                activityDTO.setUser(activityUser);
+                activityDTOS.add(activityDTO);
+            }
+            commentDTO.setActivities(activityDTOS);
+        }
         return commentDTO;
     }
 }
