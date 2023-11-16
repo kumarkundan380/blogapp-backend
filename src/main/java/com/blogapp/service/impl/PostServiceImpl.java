@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.blogapp.constant.BlogAppConstant.CATEGORY_EXCEPTION;
 import static com.blogapp.constant.BlogAppConstant.COMMON_SORT_FIELD;
@@ -220,12 +221,7 @@ public class PostServiceImpl implements PostService {
             posts = pagePosts.getContent();
         }
         if(!CollectionUtils.isEmpty(posts)){
-            for(Post post : posts){
-                PostDTO postDTO = commonService.convertPostToPostDTO(post);
-                UserDTO userDTO = commonService.convertUserToUserDTO(post.getUser());
-                postDTO.setUser(userDTO);
-                postDTOS.add(postDTO);
-            }
+            postDTOS = posts.stream().map(commonService::convertPostToPostDTO).collect(Collectors.toList());
         }
         log.info("getAllPost method called");
         return BlogAppPageableResponse.builder()

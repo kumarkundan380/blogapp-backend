@@ -57,30 +57,20 @@ public class CommonServiceImpl implements CommonService {
         PostDTO postDTO = modelMapper.map(post,PostDTO.class);
         User user = post.getUser();
         UserDTO userDTO = convertUserToUserDTO(user);
+        postDTO.setUser(userDTO);
         List<CommentDTO> commentsDTOS = new ArrayList<>();
         if(!CollectionUtils.isEmpty(post.getComments())) {
-            for(Comment comment : post.getComments()){
-                UserDTO commentedUser = convertUserToUserDTO(comment.getUser());
-                CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
-                commentDTO.setUser(commentedUser);
-                commentsDTOS.add(commentDTO);
-            }
+            commentsDTOS = post.getComments().stream().map(this::convertCommentToCommentDTO).collect(Collectors.toList());
             commentsDTOS = commentsDTOS.stream()
                     .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
                     .collect(Collectors.toList());
-            postDTO.setComments(commentsDTOS);
         }
+        postDTO.setComments(commentsDTOS);
         Set<ActivityDTO> activityDTOS = new HashSet<>();
         if(!CollectionUtils.isEmpty(post.getActivities())){
-            for(Activity activity : post.getActivities()){
-                UserDTO activityUser = convertUserToUserDTO(activity.getUser());
-                ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
-                activityDTO.setUser(activityUser);
-                activityDTOS.add(activityDTO);
-            }
-            postDTO.setActivities(activityDTOS);
+            activityDTOS = post.getActivities().stream().map(this::convertActivityToActivityDTO).collect(Collectors.toSet());
         }
-        postDTO.setUser(userDTO);
+        postDTO.setActivities(activityDTOS);
         if(AuthorityUtil.isAdminRole()){
             postDTO.setStatus(post.getPostStatus());
         }
@@ -92,20 +82,22 @@ public class CommonServiceImpl implements CommonService {
     public CommentDTO convertCommentToCommentDTO(Comment comment) {
         log.info("convertCommentToCommentDTO method invoking");
         CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
-        PostDTO postDTO = convertPostToPostDTO(comment.getPost());
         UserDTO userDTO = convertUserToUserDTO(comment.getUser());
-        commentDTO.setPost(postDTO);
         commentDTO.setUser(userDTO);
         Set<ActivityDTO> activityDTOS = new HashSet<>();
         if(!CollectionUtils.isEmpty(comment.getActivities())){
-            for(Activity activity : comment.getActivities()){
-                UserDTO activityUser = convertUserToUserDTO(activity.getUser());
-                ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
-                activityDTO.setUser(activityUser);
-                activityDTOS.add(activityDTO);
-            }
-            commentDTO.setActivities(activityDTOS);
+            activityDTOS = comment.getActivities().stream().map(this::convertActivityToActivityDTO).collect(Collectors.toSet());
         }
+        commentDTO.setActivities(activityDTOS);
         return commentDTO;
+    }
+
+    @Override
+    public ActivityDTO convertActivityToActivityDTO(Activity activity) {
+        log.info("convertCommentToCommentDTO method invoking");
+        UserDTO user = convertUserToUserDTO(activity.getUser());
+        ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
+        activityDTO.setUser(user);
+        return activityDTO;
     }
 }

@@ -1,7 +1,6 @@
 package com.blogapp.service.impl;
 
 import com.blogapp.dto.ActivityDTO;
-import com.blogapp.dto.UserDTO;
 import com.blogapp.exception.ResourceNotFoundException;
 import com.blogapp.model.Activity;
 import com.blogapp.model.Comment;
@@ -65,11 +64,7 @@ public class ActivityServiceImpl implements ActivityService {
             Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException(COMMENT_EXCEPTION, EXCEPTION_FIELD, commentId));
             activity.setComment(comment);
         }
-        activity = activityRepository.save(activity);
-        activityDTO = modelMapper.map(activity, ActivityDTO.class);
-        UserDTO userDTO = commonService.convertUserToUserDTO(user);
-        activityDTO.setUser(userDTO);
-        return activityDTO;
+        return commonService.convertActivityToActivityDTO(activityRepository.save(activity));
     }
 
     @Override
@@ -79,11 +74,7 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new ResourceNotFoundException(ACTIVITY_EXCEPTION, EXCEPTION_FIELD, activityId));
         ActivityValidation.validateActivity(activityDTO);
         activity.setActivityType(activityDTO.getActivityType());
-        activity = activityRepository.save(activity);
-        activityDTO = modelMapper.map(activity, ActivityDTO.class);
-        UserDTO userDTO = commonService.convertUserToUserDTO(activity.getUser());
-        activityDTO.setUser(userDTO);
-        return activityDTO;
+        return commonService.convertActivityToActivityDTO(activityRepository.save(activity));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.blogapp.model;
 
 import com.blogapp.enums.ActivityType;
 import com.blogapp.enums.EntityType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,11 +44,13 @@ public class Activity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
 
     @ManyToOne
     @JoinColumn(name = "comment_id")
+    @JsonBackReference
     private Comment comment;
 
 

@@ -16,14 +16,12 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties( value = {"post"}, allowSetters =  true )
 public class CommentDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
     private Integer commentId;
     private String content;
-    private PostDTO post;
     private UserDTO user;
     private Integer postId;
     private Integer userId;
