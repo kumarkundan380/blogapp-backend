@@ -30,7 +30,7 @@ public class JwtUtil {
     private final UserRepository userRepository;
 
     @Autowired
-    public JwtUtil(@Value("${blog.app.jwt.secret}") String secretKey, @Value("${blog.app.jwt.expiration.time}") Long expirationTime, UserRepository userRepository) {
+    public JwtUtil(@Value("${blog-app.jwt.secret}") String secretKey, @Value("${blog-app.jwt.expiration.time}") Long expirationTime, UserRepository userRepository) {
         this.secretKey = secretKey;
         this.expirationTime = expirationTime;
         this.userRepository = userRepository;

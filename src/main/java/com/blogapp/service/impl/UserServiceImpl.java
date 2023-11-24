@@ -15,7 +15,9 @@ import com.blogapp.repository.AddressRepository;
 import com.blogapp.repository.RoleRepository;
 import com.blogapp.repository.UserRepository;
 import com.blogapp.repository.VerificationTokenRepository;
+import com.blogapp.request.ForgotPasswordRequest;
 import com.blogapp.request.PasswordChangeRequest;
+import com.blogapp.request.VerifyEmailRequest;
 import com.blogapp.response.BlogAppPageableResponse;
 import com.blogapp.service.CommonService;
 import com.blogapp.service.ImageService;
@@ -70,9 +72,7 @@ public class UserServiceImpl implements UserService {
     private final EmailUtil emailUtil;
     private final VerificationTokenRepository verificationTokenRepository;
     private final CommonService commonService;
-
     private final ObjectMapper objectMapper;
-
     private final ImageService imageService;
 
     @Autowired
@@ -88,39 +88,6 @@ public class UserServiceImpl implements UserService {
         this.objectMapper = objectMapper;
         this.imageService = imageService;
     }
-
-//    @Override
-//    @Transactional(rollbackOn = Exception.class)
-//    public UserDTO registerUser(UserDTO userDTO) {
-//        log.info("addUser method invoking");
-//        UserValidation.validateUser(userDTO);
-//        if (!StringUtils.hasText(userDTO.getPassword().trim())) {
-//            log.error("Password is empty");
-//            throw new BlogAppException("Password cannot be empty");
-//        }
-//        userDTO.setPassword(userDTO.getPassword().trim());
-//        if(userRepository.isUserExist(userDTO.getUserName())){
-//            log.error("Username already exist");
-//            throw new BlogAppException("Username already exist. Please try other Username");
-//        }
-//        User user = modelMapper.map(userDTO, User.class);
-//        user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
-//        Optional<Role> role = roleRepository.findByRoleName(UserRole.USER.getValue());
-//        if(role.isPresent()){
-//            user.getRoles().add(role.get());
-//            log.info("Saving user information into data base");
-//            user = userRepository.save(user);
-//            userDTO = commonService.convertUserToUserDTO(user);
-//            User finalUser = user;
-//            log.info("Sending verification email");
-//            CompletableFuture.runAsync(() -> sendVerificationEmail(finalUser));
-//            log.info("addUser method called");
-//            return userDTO;
-//        }
-//        log.error("Role is not available");
-//        throw new BlogAppException("Role is not available");
-//
-//    }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
@@ -168,30 +135,6 @@ public class UserServiceImpl implements UserService {
         throw new BlogAppException("Role is not available");
 
     }
-
-
-//    @Override
-//    @Transactional(rollbackOn = Exception.class)
-//    public UserDTO updateUser(UserDTO userDTO, Integer userId) {
-//        log.info("updateUser method invoking");
-//        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
-//        log.info("validateUser method invoking");
-//        UserValidation.validateUser(userDTO);
-//        if(AuthorityUtil.isAdminRole()) {
-//            user.setStatus(userDTO.getUserStatus());
-//            return getUpdatedUser(user,userDTO);
-//        } else {
-//            if(!userRepository.isDeletedUser(userDTO.getUserName())){
-//                if(AuthorityUtil.isSameUser(userDTO.getUserName())){
-//                    return getUpdatedUser(user,userDTO);
-//                }
-//                log.error("You cannot update other user profile");
-//                throw new BlogAppException("You cannot update other user profile");
-//            }
-//            log.error("User is deleted");
-//            throw new BlogAppException("User is deleted");
-//        }
-//    }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
@@ -363,8 +306,7 @@ public class UserServiceImpl implements UserService {
         log.info("findAddress method invoking");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
         Set<Address> addresses = addressRepository.findByUser(user);
-        Set<AddressDTO> addressDTOS = addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).collect(Collectors.toSet());
-        return addressDTOS;
+        return addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).collect(Collectors.toSet());
     }
 
     @Override
@@ -407,19 +349,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public String verifyUser(String token) {
+    public String verifyUser(VerifyEmailRequest verifyEmailRequest) {
         log.info("verifyUser method invoking");
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token).orElseThrow(()-> new BlogAppException("Token is either expired or invalid"));
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(verifyEmailRequest.getToken()).orElseThrow(()-> new BlogAppException("Token is Invalid"));
         User user = verificationToken.getUser();
         if(verificationToken.getCreatedAt().plusMinutes(15).isAfter(LocalDateTime.now())) {
             user.setIsUserVerified(Boolean.TRUE);
             log.info("Saving user information into data bases");
             userRepository.save(user);
+            verificationTokenRepository.delete(verificationToken);
             log.info("verifyUser method called");
             return "Congratulations! Your account has been activated and email is verified!";
         } else {
             verificationTokenRepository.delete(verificationToken);
-            sendVerificationEmail(user);
+            CompletableFuture.runAsync(()-> sendVerificationEmail(user));
             log.info("verifyUser method called");
             return "This Link is expired. New Verification Link send to your E-Mail Please Verify it Within 15 min.";
         }
@@ -427,25 +370,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public String changePassword(PasswordChangeRequest passwordChangeRequest, Integer userId) {
+    public String changePassword(PasswordChangeRequest passwordChangeRequest) {
         log.info("changePassword method invoking");
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER_EXCEPTION, EXCEPTION_FIELD, userId));
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(passwordChangeRequest.getToken()).orElseThrow(()-> new BlogAppException("Token is Invalid"));
+        User user = verificationToken.getUser();
         PasswordChangedRequestValidation.validatePasswordChangedRequest(passwordChangeRequest);
-        if (passwordEncoder.matches(passwordChangeRequest.getOldPassword(), user.getPassword())) {
-            if (passwordChangeRequest.getOldPassword().equals(passwordChangeRequest.getNewPassword().trim())) {
+        if(verificationToken.getCreatedAt().plusMinutes(15).isAfter(LocalDateTime.now())) {
+            if (passwordEncoder.matches(passwordChangeRequest.getPassword(), user.getPassword())) {
                 log.error("New Password matched with Existing Password");
                 throw new BlogAppException("New Password matched with Existing Password. Please enter different Password");
             }
-            user.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(passwordChangeRequest.getPassword()));
             log.info("Saving user information into data base");
             userRepository.save(user);
+            verificationTokenRepository.delete(verificationToken);
             log.info("changePassword method called");
             return "Password Changed";
         } else {
-            log.error("Password Not matched with Existing Password");
-            throw new BlogAppException("Password Not matched with Existing Password");
+            verificationTokenRepository.delete(verificationToken);
+            CompletableFuture.runAsync(()-> sendPasswordResetEmail(user));
+            log.info("changePassword method called");
+            return "This Link is expired. New Password changed Link send to your Registered E-Mail Please use this link in Within 15 min.";
         }
     }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        log.info("forgotPassword method invoking");
+        if(StringUtils.hasText(forgotPasswordRequest.getEmailId())){
+            User user = userRepository.findByUserName(forgotPasswordRequest.getEmailId()).orElseThrow(() -> new BlogAppException("Email Id is not registered"));
+            CompletableFuture.runAsync(()-> sendPasswordResetEmail(user));
+            return "Password Changed Link send to your Registered Email Id. Use this link within 15 Min. Otherwise link will expired.";
+        }
+        log.error("Email Id cannot be empty.");
+        throw new BlogAppException("Email Id cannot be empty.");
+
+    }
+
     private void sendVerificationEmail(User user){
         log.info("sendVerificationEmail method invoking");
         try {
@@ -456,6 +418,18 @@ public class UserServiceImpl implements UserService {
             throw new BlogAppException("Verification link is not sent to your email. Please register once again");
         }
         log.info("sendVerificationEmail method called");
+    }
+
+    private void sendPasswordResetEmail(User user){
+        log.info("sendPasswordResetEmail method invoking");
+        try {
+            emailUtil.sendPasswordResetEmail(user);
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            log.error("Exception raised while sending VerificationEmail:"+e.getMessage());
+            userRepository.delete(user);
+            throw new BlogAppException("Password Reset link is not sent to your email. Please register once again");
+        }
+        log.info("sendPasswordResetEmail method called");
     }
 
     private UserDTO getUpdatedUser(User user, UserDTO userDTO){

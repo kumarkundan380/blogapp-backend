@@ -1,9 +1,11 @@
 package com.blogapp.service.impl;
 
+import com.blogapp.dto.ActivityDTO;
 import com.blogapp.dto.CommentDTO;
 import com.blogapp.dto.PostDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
+import com.blogapp.model.Activity;
 import com.blogapp.model.Comment;
 import com.blogapp.model.Post;
 import com.blogapp.model.User;
@@ -17,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,20 +57,20 @@ public class CommonServiceImpl implements CommonService {
         PostDTO postDTO = modelMapper.map(post,PostDTO.class);
         User user = post.getUser();
         UserDTO userDTO = convertUserToUserDTO(user);
+        postDTO.setUser(userDTO);
         List<CommentDTO> commentsDTOS = new ArrayList<>();
         if(!CollectionUtils.isEmpty(post.getComments())) {
-            for(Comment comment : post.getComments()){
-                UserDTO commentedUser = convertUserToUserDTO(comment.getUser());
-                CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
-                commentDTO.setUser(commentedUser);
-                commentsDTOS.add(commentDTO);
-            }
+            commentsDTOS = post.getComments().stream().map(this::convertCommentToCommentDTO).collect(Collectors.toList());
+            commentsDTOS = commentsDTOS.stream()
+                    .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
+                    .collect(Collectors.toList());
         }
-        commentsDTOS = commentsDTOS.stream()
-                .sorted(Comparator.comparing(CommentDTO::getCreatedAt))
-                .collect(Collectors.toList());
         postDTO.setComments(commentsDTOS);
-        postDTO.setUser(userDTO);
+        Set<ActivityDTO> activityDTOS = new HashSet<>();
+        if(!CollectionUtils.isEmpty(post.getActivities())){
+            activityDTOS = post.getActivities().stream().map(this::convertActivityToActivityDTO).collect(Collectors.toSet());
+        }
+        postDTO.setActivities(activityDTOS);
         if(AuthorityUtil.isAdminRole()){
             postDTO.setStatus(post.getPostStatus());
         }
@@ -79,10 +82,22 @@ public class CommonServiceImpl implements CommonService {
     public CommentDTO convertCommentToCommentDTO(Comment comment) {
         log.info("convertCommentToCommentDTO method invoking");
         CommentDTO commentDTO = modelMapper.map(comment,CommentDTO.class);
-        PostDTO postDTO = convertPostToPostDTO(comment.getPost());
         UserDTO userDTO = convertUserToUserDTO(comment.getUser());
-        commentDTO.setPost(postDTO);
         commentDTO.setUser(userDTO);
+        Set<ActivityDTO> activityDTOS = new HashSet<>();
+        if(!CollectionUtils.isEmpty(comment.getActivities())){
+            activityDTOS = comment.getActivities().stream().map(this::convertActivityToActivityDTO).collect(Collectors.toSet());
+        }
+        commentDTO.setActivities(activityDTOS);
         return commentDTO;
+    }
+
+    @Override
+    public ActivityDTO convertActivityToActivityDTO(Activity activity) {
+        log.info("convertCommentToCommentDTO method invoking");
+        UserDTO user = convertUserToUserDTO(activity.getUser());
+        ActivityDTO activityDTO = modelMapper.map(activity,ActivityDTO.class);
+        activityDTO.setUser(user);
+        return activityDTO;
     }
 }

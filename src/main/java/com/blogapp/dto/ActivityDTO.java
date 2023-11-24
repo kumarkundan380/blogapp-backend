@@ -1,6 +1,8 @@
 package com.blogapp.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.blogapp.enums.ActivityType;
+import com.blogapp.enums.EntityType;
+import com.blogapp.model.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,25 +11,23 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO implements Serializable {
+public class ActivityDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private Integer commentId;
-    private String content;
+    private Integer activityId;
+    private ActivityType activityType;
+    private EntityType entityType;
     private UserDTO user;
     private Integer postId;
+    private Integer commentId;
     private Integer userId;
-    private Set<ActivityDTO> activities = new HashSet<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 
 }

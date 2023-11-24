@@ -4,6 +4,8 @@ public class BlogAppConstant {
     private BlogAppConstant () {}
 
     public static final String LOCAL_BASE_PATH = "http://localhost:8080";
+    public static final String FORGOT_PASSWORD_PATH = "http://localhost:4200/forgot-password";
+    public static final String VERIFY_EMAIL_PATH = "http://localhost:4200/verify-email";
     public static final String COMMON_PATH = "/api/v1";
     public static final String ROLES_PATH = "/roles";
     public static final String ADDRESS_PATH = "/address";
@@ -23,12 +25,14 @@ public class BlogAppConstant {
     public static final String USER_EXCEPTION = "User";
     public static final String ADDRESS_EXCEPTION = "Address";
     public static final String COMMENT_EXCEPTION = "Comment";
+    public static final String ACTIVITY_EXCEPTION = "Comment";
     public static final String EXCEPTION_FIELD = "id";
     public static final String DEFAULT_IMAGE = "default.jpg";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_PREFIX = "Bearer ";
     public static final String BASE_PATH_AUTH = COMMON_PATH + "/auth";
     public static final String BASE_PATH_ADMIN = COMMON_PATH + "/admin";
+    public static final String BASE_PATH_ACTIVITY = COMMON_PATH + "/activities";
     public static final String BASE_PATH_IMAGE = COMMON_PATH + "/image";
     public static final String IMAGE_PARAMETER = "image";
     public static final String USER_DATA = "userData";
@@ -41,9 +45,11 @@ public class BlogAppConstant {
     public static final String CATEGORY_PARAMETER = "categoryId";
     public static final String BASE_PATH_COMMENT = COMMON_PATH + "/comments";
     public static final String COMMENT_PARAMETER = "commentId";
+    public static final String ACTIVITY_PARAMETER = "activityId";
     public static final String BASE_PATH_USER = COMMON_PATH + "/users";
     public static final String CHANGE_PASSWORD = "/change-password";
-    public static final String VERIFY_USER = "/verify";
+    public static final String FORGOT_PASSWORD = "/forgot-password";
+    public static final String VERIFY_EMAIL = "/verify-email";
     public static final String USER_PARAMETER = "userId";
     public static final String ADDRESS_PARAMETER = "addressId";
     public static final String TOKEN_PARAMETER = "token";
@@ -61,7 +67,6 @@ public class BlogAppConstant {
     public static final String[] PUBLIC_URLS = {
             BASE_PATH_AUTH + LOGIN,
             BASE_PATH_USER ,
-            BASE_PATH_USER + VERIFY_USER +"/**",
             "/v3/api-docs",
             "/v2/api-docs",
             "/swagger-resources/**",
@@ -70,8 +75,6 @@ public class BlogAppConstant {
     };
 
     public static final String[] ADMIN_URLS = {
-          //  BASE_PATH_USER + "/**",
-          //  BASE_PATH_USER + ROLES_PATH + "/**",
             BASE_PATH_CATEGORY + "/**"
     };
 
