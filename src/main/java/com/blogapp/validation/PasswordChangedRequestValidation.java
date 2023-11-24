@@ -10,13 +10,19 @@ public class PasswordChangedRequestValidation {
 
     public static void validatePasswordChangedRequest(PasswordChangeRequest passwordChangeRequest){
         log.info("validatePasswordChangedRequest method invoking");
-        if(!StringUtils.hasText(passwordChangeRequest.getOldPassword())){
-            throw new BlogAppException("Old Password cannot be empty");
+        if(!StringUtils.hasText(passwordChangeRequest.getPassword())){
+            throw new BlogAppException("Password cannot be empty");
         }
-        if(!StringUtils.hasText(passwordChangeRequest.getNewPassword())){
-            throw new BlogAppException("New Password cannot be empty");
+        if(!StringUtils.hasText(passwordChangeRequest.getConfirmPassword())){
+            throw new BlogAppException("Confirm Password cannot be empty");
         }
-        passwordChangeRequest.setOldPassword(passwordChangeRequest.getOldPassword().trim());
-        passwordChangeRequest.setNewPassword(passwordChangeRequest.getNewPassword().trim());
+        if(!StringUtils.hasText(passwordChangeRequest.getToken())){
+            throw new BlogAppException("Token cannot be empty");
+        }
+        if(!passwordChangeRequest.getPassword().equals(passwordChangeRequest.getConfirmPassword())){
+            throw new BlogAppException("Confirm Password not matched with Password");
+        }
+        passwordChangeRequest.setPassword(passwordChangeRequest.getPassword().trim());
+        passwordChangeRequest.setConfirmPassword(passwordChangeRequest.getConfirmPassword().trim());
     }
 }

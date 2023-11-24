@@ -3,17 +3,16 @@ package com.blogapp.service;
 import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.dto.UserDTO;
+import com.blogapp.request.ForgotPasswordRequest;
 import com.blogapp.request.PasswordChangeRequest;
+import com.blogapp.request.VerifyEmailRequest;
 import com.blogapp.response.BlogAppPageableResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
 public interface UserService {
-//    UserDTO registerUser(UserDTO user);
     UserDTO registerUser(MultipartFile image, String userData);
-//    UserDTO updateUser(UserDTO user, Integer userId);
     UserDTO updateUser(MultipartFile image, String userData, Integer userId);
     UserDTO getUserById(Integer userId);
     BlogAppPageableResponse<?> getAllUser(Integer pageNumber, Integer pageSize);
@@ -26,6 +25,7 @@ public interface UserService {
     UserDTO updateAddress(AddressDTO addressDTO, Integer userId, Integer addressId);
     AddressDTO getOneAddress(Integer userId, Integer addressId);
     UserDTO deleteAddress(Integer userId,Integer addressId);
-    String verifyUser(String token);
-    String changePassword(PasswordChangeRequest passwordChangeRequest, Integer userId);
+    String verifyUser(VerifyEmailRequest verifyEmailRequest);
+    String changePassword(PasswordChangeRequest passwordChangeRequest);
+    String forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
 }

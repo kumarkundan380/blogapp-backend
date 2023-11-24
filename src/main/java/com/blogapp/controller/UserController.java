@@ -3,7 +3,9 @@ package com.blogapp.controller;
 import com.blogapp.dto.AddressDTO;
 import com.blogapp.dto.RoleDTO;
 import com.blogapp.enums.ResponseStatus;
+import com.blogapp.request.ForgotPasswordRequest;
 import com.blogapp.request.PasswordChangeRequest;
+import com.blogapp.request.VerifyEmailRequest;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.UserService;
 import jakarta.validation.Valid;
@@ -27,16 +29,16 @@ import static com.blogapp.constant.BlogAppConstant.ADDRESS_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.ADDRESS_PATH;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
 import static com.blogapp.constant.BlogAppConstant.CHANGE_PASSWORD;
+import static com.blogapp.constant.BlogAppConstant.FORGOT_PASSWORD;
 import static com.blogapp.constant.BlogAppConstant.IMAGE_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.PAGE_NUMBER;
 import static com.blogapp.constant.BlogAppConstant.PAGE_NUMBER_VALUE;
 import static com.blogapp.constant.BlogAppConstant.PAGE_SIZE;
 import static com.blogapp.constant.BlogAppConstant.PAGE_SIZE_VALUE;
 import static com.blogapp.constant.BlogAppConstant.ROLES_PATH;
-import static com.blogapp.constant.BlogAppConstant.TOKEN_PARAMETER;
 import static com.blogapp.constant.BlogAppConstant.USER_DATA;
 import static com.blogapp.constant.BlogAppConstant.USER_PARAMETER;
-import static com.blogapp.constant.BlogAppConstant.VERIFY_USER;
+import static com.blogapp.constant.BlogAppConstant.VERIFY_EMAIL;
 
 @RestController
 @RequestMapping(value = BASE_PATH_USER)
@@ -51,7 +53,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(value = IMAGE_PARAMETER, required = false) MultipartFile image,
-                                                           @RequestParam(USER_DATA) String userData) {
+                                                           @RequestParam(value = USER_DATA) String userData) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("Welcome to Blog App, please verify your email address")
@@ -62,7 +64,7 @@ public class UserController {
 
     @PutMapping("/{" + USER_PARAMETER + "}")
     public ResponseEntity<BlogAppResponse<?>> updateUser(@RequestParam(value = IMAGE_PARAMETER, required = false)MultipartFile image,
-                                                         @RequestParam(USER_DATA) String userData,
+                                                         @RequestParam(value = USER_DATA) String userData,
                                                          @PathVariable Integer userId) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
@@ -192,22 +194,31 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/{" + USER_PARAMETER + "}" + CHANGE_PASSWORD)
-    public ResponseEntity<BlogAppResponse<?>> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest,
-                                                             @PathVariable Integer userId) {
+    @PostMapping(CHANGE_PASSWORD)
+    public ResponseEntity<BlogAppResponse<?>> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
                 .message("Password changed successfully")
-                .body(userService.changePassword(passwordChangeRequest, userId))
+                .body(userService.changePassword(passwordChangeRequest))
                 .build(),
                 HttpStatus.OK);
     }
 
-    @GetMapping(VERIFY_USER + "/{" + TOKEN_PARAMETER + "}")
-    public ResponseEntity<BlogAppResponse<?>> verifyUser(@PathVariable String token) {
+    @PostMapping(FORGOT_PASSWORD)
+    public ResponseEntity<BlogAppResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         return new ResponseEntity<>(BlogAppResponse.builder()
                 .status(ResponseStatus.SUCCESS)
-                .message(userService.verifyUser(token))
+                .message("Password changed link send to your registered email id")
+                .body(userService.forgotPassword(forgotPasswordRequest))
+                .build(),
+                HttpStatus.OK);
+    }
+
+    @PostMapping(VERIFY_EMAIL)
+    public ResponseEntity<BlogAppResponse<?>> verifyUser(@Valid @RequestBody VerifyEmailRequest verifyEmailRequest) {
+        return new ResponseEntity<>(BlogAppResponse.builder()
+                .status(ResponseStatus.SUCCESS)
+                .message(userService.verifyUser(verifyEmailRequest))
                 .build(),
                 HttpStatus.OK);
     }

@@ -4,6 +4,8 @@ public class BlogAppConstant {
     private BlogAppConstant () {}
 
     public static final String LOCAL_BASE_PATH = "http://localhost:8080";
+    public static final String FORGOT_PASSWORD_PATH = "http://localhost:4200/forgot-password";
+    public static final String VERIFY_EMAIL_PATH = "http://localhost:4200/verify-email";
     public static final String COMMON_PATH = "/api/v1";
     public static final String ROLES_PATH = "/roles";
     public static final String ADDRESS_PATH = "/address";
@@ -46,7 +48,8 @@ public class BlogAppConstant {
     public static final String ACTIVITY_PARAMETER = "activityId";
     public static final String BASE_PATH_USER = COMMON_PATH + "/users";
     public static final String CHANGE_PASSWORD = "/change-password";
-    public static final String VERIFY_USER = "/verify";
+    public static final String FORGOT_PASSWORD = "/forgot-password";
+    public static final String VERIFY_EMAIL = "/verify-email";
     public static final String USER_PARAMETER = "userId";
     public static final String ADDRESS_PARAMETER = "addressId";
     public static final String TOKEN_PARAMETER = "token";
@@ -64,7 +67,6 @@ public class BlogAppConstant {
     public static final String[] PUBLIC_URLS = {
             BASE_PATH_AUTH + LOGIN,
             BASE_PATH_USER ,
-            BASE_PATH_USER + VERIFY_USER +"/**",
             "/v3/api-docs",
             "/v2/api-docs",
             "/swagger-resources/**",
@@ -73,8 +75,6 @@ public class BlogAppConstant {
     };
 
     public static final String[] ADMIN_URLS = {
-          //  BASE_PATH_USER + "/**",
-          //  BASE_PATH_USER + ROLES_PATH + "/**",
             BASE_PATH_CATEGORY + "/**"
     };
 

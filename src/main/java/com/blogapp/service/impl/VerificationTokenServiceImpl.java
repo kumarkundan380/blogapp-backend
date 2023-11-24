@@ -39,7 +39,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     @Override
     public VerificationToken createVerificationToken() {
         VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(new String(Base64.encodeBase64URLSafeString(DEFAULT_TOKEN_GENERATOR.generateKey())));
+        verificationToken.setToken(Base64.encodeBase64URLSafeString(DEFAULT_TOKEN_GENERATOR.generateKey()));
         return verificationToken;
     }
 

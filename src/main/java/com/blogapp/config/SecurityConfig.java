@@ -23,10 +23,12 @@ import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ADMIN;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_CATEGORY;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_POST;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_USER;
+import static com.blogapp.constant.BlogAppConstant.CHANGE_PASSWORD;
 import static com.blogapp.constant.BlogAppConstant.DELETED_POST;
+import static com.blogapp.constant.BlogAppConstant.FORGOT_PASSWORD;
 import static com.blogapp.constant.BlogAppConstant.PENDING_POST;
 import static com.blogapp.constant.BlogAppConstant.PUBLIC_URLS;
-import static com.blogapp.constant.BlogAppConstant.ROLES_PATH;
+import static com.blogapp.constant.BlogAppConstant.VERIFY_EMAIL;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +48,9 @@ public class SecurityConfig {
 				.authorizeHttpRequests( request ->
 					request.requestMatchers(PUBLIC_URLS).permitAll()
 							.requestMatchers(HttpMethod.POST, BASE_PATH_USER).permitAll()
+							.requestMatchers(HttpMethod.POST, BASE_PATH_USER + FORGOT_PASSWORD).permitAll()
+							.requestMatchers(HttpMethod.POST, BASE_PATH_USER + CHANGE_PASSWORD).permitAll()
+							.requestMatchers(HttpMethod.POST, BASE_PATH_USER + VERIFY_EMAIL).permitAll()
 							.requestMatchers(HttpMethod.GET, BASE_PATH_CATEGORY).permitAll()
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + APPROVED_POST).permitAll()
 							.requestMatchers(HttpMethod.GET, BASE_PATH_POST + "/**").permitAll()

@@ -1,22 +1,23 @@
 package com.blogapp.request;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 import jakarta.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PasswordChangeRequest {
 
-	@NotBlank(message = "Old Password must not be null or empty")
-	private String oldPassword;
+	@NotBlank(message = "Password must not be null or empty")
+	private String password;
 	
-	@NotBlank(message = "New Password must not be null or empty")
-	private String newPassword;
+	@NotBlank(message = "Confirm Password must not be null or empty")
+	private String confirmPassword;
+
+	@NotBlank(message = "Token must not be null or empty")
+	private String token;
 }

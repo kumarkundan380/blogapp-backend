@@ -53,8 +53,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<BlogAppErrorResponse<?>> handleRemainingException(Exception e){
 		System.out.println(e.getClass().getCanonicalName());
-		//System.out.println(e.printStackTrace());
-		e.printStackTrace();
 		return new ResponseEntity<>(BlogAppErrorResponse.builder()
 				.status(ResponseStatus.ERROR)
 				.errorMessage("Oops! Something went wrong. Please try again. "+e.getMessage())

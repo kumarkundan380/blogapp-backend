@@ -5,14 +5,14 @@ import com.blogapp.model.VerificationToken;
 
 public interface VerificationTokenService {
 
-    public VerificationToken getVerificationTokenByToken(String token);
+    VerificationToken getVerificationTokenByToken(String token);
 
-    public VerificationToken saveToken(VerificationToken verificationToken);
+    VerificationToken saveToken(VerificationToken verificationToken);
 
-    public VerificationToken createVerificationToken();
+    VerificationToken createVerificationToken();
 
-    public void removeVerificationToken(VerificationToken verificationToken);
+    void removeVerificationToken(VerificationToken verificationToken);
 
-    public VerificationToken getVerificationTokenByUser(User user);
+    VerificationToken getVerificationTokenByUser(User user);
 
 }
