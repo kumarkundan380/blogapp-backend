@@ -4,6 +4,7 @@ import com.blogapp.enums.ResponseStatus;
 import com.blogapp.request.LoginRequest;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import static com.blogapp.constant.BlogAppConstant.LOGIN;
 
 @RestController
 @RequestMapping(BASE_PATH_AUTH)
+@Tag(name="Auth Controller", description = "API Related to Authentication")
 public class AuthController {
 
 	private final AuthService authService;

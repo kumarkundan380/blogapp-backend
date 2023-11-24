@@ -67,8 +67,7 @@ public class BlogAppConstant {
     public static final String[] PUBLIC_URLS = {
             BASE_PATH_AUTH + LOGIN,
             BASE_PATH_USER ,
-            "/v3/api-docs",
-            "/v2/api-docs",
+            "/v3/api-docs/**",
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/webjars/**"

@@ -3,6 +3,7 @@ package com.blogapp.controller;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.AdminService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ADMIN;
 @RestController
 @RequestMapping(BASE_PATH_ADMIN)
+@Tag(name="Admin Controller", description = "API Related to Admin Dashboard")
 public class AdminInfoController {
 
     private final AdminService adminService;

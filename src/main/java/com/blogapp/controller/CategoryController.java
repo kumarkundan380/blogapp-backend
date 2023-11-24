@@ -4,6 +4,7 @@ import com.blogapp.dto.CategoryDTO;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import static com.blogapp.constant.BlogAppConstant.CATEGORY_PARAMETER;
 
 @RestController
 @RequestMapping(value = BASE_PATH_CATEGORY)
+@Tag(name="Category Controller", description = "API Related to Category")
 public class CategoryController {
 
     private final CategoryService categoryService;

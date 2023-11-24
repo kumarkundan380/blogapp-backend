@@ -8,6 +8,10 @@ import com.blogapp.request.PasswordChangeRequest;
 import com.blogapp.request.VerifyEmailRequest;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +46,7 @@ import static com.blogapp.constant.BlogAppConstant.VERIFY_EMAIL;
 
 @RestController
 @RequestMapping(value = BASE_PATH_USER)
+@Tag(name="User Controller", description = "API Related to User")
 public class UserController {
 
     private final UserService userService;
@@ -52,6 +57,12 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Create new User", description = "This is signup Api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success| Ok"),
+            @ApiResponse(responseCode = "401", description = "Not Authorized"),
+            @ApiResponse(responseCode = "201", description = "New User Created")
+    })
     public ResponseEntity<BlogAppResponse<?>> registerUser(@RequestParam(value = IMAGE_PARAMETER, required = false) MultipartFile image,
                                                            @RequestParam(value = USER_DATA) String userData) {
         return new ResponseEntity<>(BlogAppResponse.builder()

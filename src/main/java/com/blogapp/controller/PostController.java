@@ -3,6 +3,7 @@ package com.blogapp.controller;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.PostService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import static com.blogapp.constant.BlogAppConstant.POST_PARAMETER;
 
 @RestController
 @RequestMapping(value = BASE_PATH_POST)
+@Tag(name="Post Controller", description = "API Related to Post")
 public class PostController {
 
     private final PostService postService;
