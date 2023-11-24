@@ -4,6 +4,7 @@ import com.blogapp.dto.ActivityDTO;
 import com.blogapp.enums.ResponseStatus;
 import com.blogapp.response.BlogAppResponse;
 import com.blogapp.service.ActivityService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import static com.blogapp.constant.BlogAppConstant.BASE_PATH_ACTIVITY;
 
 @RestController
 @RequestMapping(BASE_PATH_ACTIVITY)
+@Tag(name="Activity Controller", description = "API Related to Activity")
 public class ActivityController {
 
     private final ActivityService activityService;
